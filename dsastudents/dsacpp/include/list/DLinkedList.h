@@ -301,7 +301,8 @@ DLinkedList<T>::DLinkedList(
 template<class T>
 DLinkedList<T>::DLinkedList(const DLinkedList<T>& list){
     //YOUR CODE HERE
-    
+    Node *head = new Node(NULL);
+    Node *tail = new Node(NULL);
     copyFrom(list);
 }
 
@@ -316,14 +317,29 @@ DLinkedList<T>& DLinkedList<T>::operator=(const DLinkedList<T>& list){
 template<class T>
 DLinkedList<T>::~DLinkedList() {
     removeInternalData();
-    
     //YOUR CODE HERE
+    delete head;
+    delete tail;
+    count = 0;
 }
 
 template<class T>
 void DLinkedList<T>::add(T e) {
-    Node* node = new Node(e, tail, tail->prev);
+    Node* newNode = new Node(e, tail, tail->prev);
     //YOUR CODE HERE
+    if(head->next == tail)
+    {
+        head->next = newNode;
+        tail->prev = newNode;
+    }
+    else
+    {
+        Node* oldTail = tail->prev;
+        oldTail->next = newNode;
+        tail->prev = newNode;
+    }
+    //Increase the size
+    count++;
 }
 template<class T>
 void DLinkedList<T>::add(int index, T e) {
@@ -331,7 +347,21 @@ void DLinkedList<T>::add(int index, T e) {
         throw std::out_of_range("The index is out of range!");
     
     //YOUR CODE HERE
-    
+    Node *newNode = new Node(e); // make a new Node
+    Node *prevNode = head;
+    for (int i = -1; i < index - 1;i++)
+    {
+        prevNode = prevNode->next;
+    }
+        Node *currNode = prevNode->next;
+    // Make connection with new Node;
+    prevNode->next = newNode;
+    newNode->prev = prevNode;
+    newNode->next = currNode;
+    currNode->prev = newNode;
+
+    if(index == count)
+        tail->prev = newNode;
     //5. increase count by 1
     count += 1;
 }
@@ -366,54 +396,111 @@ typename DLinkedList<T>::Node* DLinkedList<T>::getPreviousNodeOf(int index){
 
 template<class T>
 T DLinkedList<T>::removeAt(int index){
-    if((index < 0) || (index > count - 1))
+    if((index < 0) || (index > count - 1)||empty()==true)
         throw std::out_of_range("The index is out of range!");
-    
     //YOUR CODE HERE
+    T answer;
+    int pos = -1;
+    //Move the the index Node
+    Node *currNode = head;
+    while(pos <  index)
+    {
+        currNode = currNode->next;
+        pos++;
+    }
+    Node *nextNode = currNode->next;
+    Node *prevNode = currNode->prev;
+    //get the data to return
+    answer = currNode->data;
+    //Make connection between prev and next of currNode
+    prevNode->next = nextNode;
+    nextNode->prev = prevNode;
+    
+    if(index == count)
+        tail->prev = prevNode;
+    
+    delete currNode;
+    //Decrease size of list
+    count--;
+    return answer;
 }
 
 template<class T>
 bool DLinkedList<T>::empty(){
     //YOUR CODE HERE
+    return count == 0;
 }
 
 template<class T>
 int  DLinkedList<T>::size(){
     //YOUR CODE HERE
+    return count;
 }
 
 template<class T>
 void DLinkedList<T>::clear(){
     removeInternalData();
-    
+    head->next = tail;
+    tail->prev = head;
+    count = 0;
     //YOUR CODE HERE
 }
 
 template<class T>
 T& DLinkedList<T>::get(int index){
-    if((index < 0) || (index > count - 1))
-        throw std::out_of_range("The index is out of range!");
-    
-    Node* prevNode = getPreviousNodeOf(index);
-    
+    if((index < 0) || (index > count - 1) ||empty()== true)
+        throw std::out_of_range("The index is out of range!");    
     //HERE: prevNode points to previous item (at index - 1); ready for get
     //YOUR CODE HERE
+    Node *ptr = head;
+    for(int i = -1; i < index;i++)
+    {
+        ptr = ptr->next;
+    }
+    return (ptr->data);
 }
 
 template<class T>
 int  DLinkedList<T>::indexOf(T item){
     //YOUR CODE HERE
+    int index = 0;
+    for (DLinkedList<T>::Iterator it = this->begin(); it != this->end(); ++it)
+    {
+        if(equals(*it,item,this->itemEqual)==true)
+        {
+            return index;
+        }
+        index++;
+    }
+    return -1;
 }
 
 template<class T>
 bool DLinkedList<T>::removeItem(T item, void (*removeItemData)(T)){
     //YOUR CODE HERE
+    for (DLinkedList<T>::Iterator it = this->begin(); it != this->end(); ++it)
+    {
+        if(equals(*it,item,this->itemEqual) == true)
+        {
+            it.remove(removeItemData);
+            return true;
+        }
+    }
+    return false;
 }
 
 
 template<class T>
 bool DLinkedList<T>::contains(T item){
     //YOUR CODE HERE
+    for (DLinkedList<T>::Iterator it = this->begin(); it != this->end();++it)
+    {
+        if(equals(*it,item,this->itemEqual)==true)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 template<class T>
