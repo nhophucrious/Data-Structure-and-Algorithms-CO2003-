@@ -2,13 +2,13 @@
 #include "doctest.h"
 
 // #include "test/XArrayListTest.h"
-// #include "test/XArrayListSETest.h"
+//#include "test/XArrayListSETest.h"
 
 
 //UNCOMMENT the following WHENEVER completing the related data structures
 
 #include "test/SLinkedListTest.h"
-// #include "test/SLinkedListSETest.h" 
+//#include "test/SLinkedListSETest.h" 
 #include "test/DLinkedListTest.h"
 // #include "test/DLinkedListSETest.h"
 // #include "test/BSTTest.h"

@@ -40,10 +40,14 @@ public:
     }
     T pop(){
         //YOUR CODE HERE
+        if(list.empty() == true)
+            throw Underflow("Queue");
         return list.removeAt(0);
     }
     T& peek(){
         //YOUR CODE HERE
+        if(list.empty() == true)
+            throw Underflow("Queue");
         return list.get(0);
     }
     bool empty(){

@@ -25,7 +25,7 @@ template <class T>
 class SLinkedList;
 
 template <class T>
-class SLinkedList : IList<T>
+class SLinkedList : public IList<T>
 {
 public:
     class Iterator; //forward declaration
@@ -186,7 +186,6 @@ public:
                     //prepare for next iteration, usually: it++
 
                     this->pNode = pPrev;
-
                     return;
                 }
 
@@ -284,8 +283,8 @@ SLinkedList<T>::SLinkedList(const SLinkedList<T> &list)
 {
     //Initialize to the empty condition
     //YOUR CODE HERE:  create two dummy nodes: head and tail
-    Node *head = new Node(NULL);
-    Node *tail = new Node(NULL);
+    head->next = tail;
+    tail->next = head;
     copyFrom(list);
 }
 
@@ -446,8 +445,10 @@ bool SLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
     {
         if(equals(*it,item,this->itemEqual))
         {
-            it.remove(removeItemData);
-            return true;
+            {
+                it.remove(removeItemData);
+                return true;
+            }
         }
     }
     return false;
@@ -483,35 +484,29 @@ T &SLinkedList<T>::get(int index)
 {
     if ((index < 0) || (index > count - 1))
         throw std::out_of_range("The index is out of range!");
-    //YOUR CODE HERE
-    if (index == 0)
+    Node *ptr = head;
+    for(int i = -1; i < index;i++)
     {
-        Node *temp = head->next;
-        return (temp->data);
+        ptr = ptr->next;
     }
-    else
-    {
-        Node *temp = head->next;        // get the first internal node
-        for (int i = index; i > 0; i--) // move to the require index
-        {
-            temp = temp->next;
-        }
-        return (temp->data); // return the address;
-    }
+    return (ptr->data);
 }
 
 template <class T>
 int SLinkedList<T>::indexOf(T item)
 {
     //YOUR CODE HERE
+    if(empty() == true)
+        return -1;
     int index = 0;
-    for (SLinkedList<T>::Iterator it = this->begin(); it!=this->end();++it)
+    Node *temp = head->next;
+    while(temp!=tail)
     {
-        if (equals(*it, item, this->itemEqual))
-        {
+        if(equals(temp->data,item,this->itemEqual) == true)
             return index;
-        }
         index++;
+        temp = temp->next;
+    
     }
     return -1;
 }
@@ -519,13 +514,15 @@ int SLinkedList<T>::indexOf(T item)
 template <class T>
 bool SLinkedList<T>::contains(T item)
 {
+    if(empty() == true)
+        return false;
 
-    for (SLinkedList<T>::Iterator it = this->begin(); it != this->end();++it)
+    Node *temp = head->next;
+    while(temp!= tail)
     {
-        if(equals(*it,item,this->itemEqual)==true)
-        {
+        if(equals((temp->data),item,this->itemEqual))
             return true;
-        }
+        temp = temp->next;
     }
     return false;
 }
@@ -533,6 +530,7 @@ bool SLinkedList<T>::contains(T item)
 template <class T>
 string SLinkedList<T>::toString(string (*item2str)(T &))
 {
+    if (count == 0) return "[]";
     stringstream ss;
     ss << "[";
     Node *ptr = head->next;

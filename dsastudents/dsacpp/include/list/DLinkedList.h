@@ -23,7 +23,7 @@ using namespace std;
 
 
 template<class T>
-class DLinkedList: IList<T> {
+class DLinkedList: public IList<T> {
 public:
     class Node; //Forward declaration
     class Iterator; //Forward declaration
@@ -301,8 +301,8 @@ DLinkedList<T>::DLinkedList(
 template<class T>
 DLinkedList<T>::DLinkedList(const DLinkedList<T>& list){
     //YOUR CODE HERE
-    Node *head = new Node(NULL);
-    Node *tail = new Node(NULL);
+    head->next = tail;
+    tail->prev = head;
     copyFrom(list);
 }
 
@@ -396,7 +396,7 @@ typename DLinkedList<T>::Node* DLinkedList<T>::getPreviousNodeOf(int index){
 
 template<class T>
 T DLinkedList<T>::removeAt(int index){
-    if((index < 0) || (index > count - 1)||empty()==true)
+    if((index < 0) || (index > count - 1)|| empty()==true)
         throw std::out_of_range("The index is out of range!");
     //YOUR CODE HERE
     T answer;
@@ -463,14 +463,17 @@ T& DLinkedList<T>::get(int index){
 template<class T>
 int  DLinkedList<T>::indexOf(T item){
     //YOUR CODE HERE
+    if(empty() == true)
+        return -1;
     int index = 0;
-    for (DLinkedList<T>::Iterator it = this->begin(); it != this->end(); ++it)
+    Node *temp = head->next;
+    while(temp!=tail)
     {
-        if(equals(*it,item,this->itemEqual)==true)
-        {
+        if(equals(temp->data,item,this->itemEqual) == true)
             return index;
-        }
         index++;
+        temp = temp->next;
+    
     }
     return -1;
 }
@@ -493,18 +496,22 @@ bool DLinkedList<T>::removeItem(T item, void (*removeItemData)(T)){
 template<class T>
 bool DLinkedList<T>::contains(T item){
     //YOUR CODE HERE
-    for (DLinkedList<T>::Iterator it = this->begin(); it != this->end();++it)
+    if(empty() == true)
+        return false;
+
+    Node *temp = head->next;
+    while(temp!= tail)
     {
-        if(equals(*it,item,this->itemEqual)==true)
-        {
+        if(equals((temp->data),item,this->itemEqual))
             return true;
-        }
+        temp = temp->next;
     }
     return false;
 }
 
 template<class T>
 string DLinkedList<T>::toString(string (*item2str)(T&) ){
+    if (count == 0) return "[]";
     stringstream ss;
     ss << "[";
     Node* ptr = head->next;

@@ -14,7 +14,8 @@
 #ifndef DLINKEDLISTSETEST_H
 #define DLINKEDLISTSETEST_H
 #include "doctest.h"
-#include "sorting/DLinkedListSE.h"
+#include "list/DLinkedList.h"
+//#include "sorting/DLinkedListSE.h"
 #include "util/Point.h"
 
 TEST_CASE( "DLinkedListSE<int>[1]: adding items, then sorting" ) {
