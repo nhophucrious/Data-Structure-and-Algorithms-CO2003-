@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include <time.h>
 using namespace std;
 using namespace std::chrono;
 
@@ -22,14 +21,13 @@ int randomNumber(int size)
 {
     int lower = 0;
     int upper = size - 1;
-    srand(time(NULL));
     int number = (rand() % (upper - lower) + lower);
     return number;
 }
 
 double addRand(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
 {
-    duration<double, milli> diff;
+    duration<double> diff;
     // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
@@ -44,7 +42,7 @@ double addRand(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int 
             auto start = high_resolution_clock ::now();           //start counting time;
             plist->add(K, 1);                                     // Do addfirst operation
             auto end = high_resolution_clock ::now();             //end counting time
-            diff += chrono::duration<double, milli>(end - start); //store and increase the differece
+            diff += chrono::duration<double>(end - start); //store and increase the differece
             plist->removeAt(0);                                   // return the size before adding
         }
     }
@@ -54,7 +52,7 @@ double addRand(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int 
 }
 double addFirst(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
 {
-    duration<double, milli> diff;
+    duration<double> diff;
     // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
@@ -67,7 +65,7 @@ double addFirst(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int
         auto start = high_resolution_clock ::now(); //start counting time;
         plist->add(0, 1);                           // Do addfirst operation;
         auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
+        diff += chrono::duration<double>(end - start);
         plist->removeAt(0); //remove the size before
     }
     plist->clear(); // prepare to make a new list
@@ -76,7 +74,7 @@ double addFirst(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int
 }
 double addLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
 {
-    duration<double, milli> diff;
+    duration<double> diff;
     // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
@@ -88,7 +86,7 @@ double addLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, i
         auto start = high_resolution_clock ::now(); //start counting time;
         plist->add(1);                              // Do addfirst operation
         auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
+        diff += chrono::duration<double>(end - start);
         plist->removeAt(0); //remove the size before
     }
     plist->clear(); // prepare to make a new list
@@ -97,7 +95,7 @@ double addLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, i
 }
 double removeFirstPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
 {
-    duration<double, milli> diff;
+    duration<double> diff;
     // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
@@ -110,7 +108,7 @@ double removeFirstPos(IList<int> *plist, string csvfile, int *ptr_sizes, int siz
         auto start = high_resolution_clock ::now(); //start counting time;
         plist->removeAt(0);                         // Do addfirst operation
         auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
+        diff += chrono::duration<double>(end - start);
         plist->add(1);
     }
     plist->clear(); // prepare to make a new list
@@ -120,7 +118,7 @@ double removeFirstPos(IList<int> *plist, string csvfile, int *ptr_sizes, int siz
 
 double removeLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
 {
-    duration<double,milli> diff;
+    duration<double> diff;
     // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
@@ -133,7 +131,7 @@ double removeLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size
         auto start = high_resolution_clock ::now(); //start counting time;
         plist->removeAt(plist->size() - 1);         // Do addfirst operation
         auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
+        diff += chrono::duration<double>(end - start);
         plist->add(1);
     }
     plist->clear(); 
@@ -142,7 +140,7 @@ double removeLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size
 }
 double removeRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
 {
-    duration<double,milli> diff;
+    duration<double> diff;
     // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
@@ -157,7 +155,7 @@ double removeRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size
             auto start = high_resolution_clock ::now(); //start counting time;
             plist->removeAt(K);                         // Do addfirst operation
             auto end = high_resolution_clock ::now();   //end counting time
-            diff += chrono::duration<double, milli>(end - start); //store and increase the differece
+            diff += chrono::duration<double>(end - start); //store and increase the differece
             plist->add(1);                                        //restore the before size
         }
     }
@@ -167,7 +165,7 @@ double removeRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size
 }
 double getRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
 {
-    duration<double,milli> diff;
+    duration<double> diff;
     // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
@@ -182,7 +180,7 @@ double getRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, i
             auto start = high_resolution_clock ::now(); //start counting time;
             plist->get(K);                              // Do addfirst operation
             auto end = high_resolution_clock ::now();   //end counting time
-            diff += chrono::duration<double, milli>(end - start); //store and increase the differece                                        //restore the before size                    
+            diff += chrono::duration<double>(end - start); //store and increase the differece                                        //restore the before size                    
         }
     }
     plist->clear(); // prepare to make a new list

@@ -302,8 +302,10 @@ SLinkedList<T>::~SLinkedList()
 {
     removeInternalData();
     //YOUR CODE HERE: delete dummy nodes
-    delete head;
-    delete tail;
+    if(head!=NULL)
+        delete head;
+    if(tail!=NULL)
+        delete tail;
     count = 0;
 }
 
