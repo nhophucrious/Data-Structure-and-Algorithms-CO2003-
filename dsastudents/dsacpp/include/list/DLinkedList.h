@@ -471,7 +471,7 @@ T DLinkedList<T>::removeAt(int index)
     else if (index == this->size() - 1)
     {
         Node *deleteNode = tail->prev;
-        Node* prevNode = deleteNode->prev;
+        Node *prevNode = deleteNode->prev;
         prevNode->next = tail;
         tail->prev = prevNode;
         answer = deleteNode->data;
@@ -549,16 +549,57 @@ int DLinkedList<T>::indexOf(T item)
 template <class T>
 bool DLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
 {
-    //YOUR CODE HERE
-    for (DLinkedList<T>::Iterator it = this->begin(); it != this->end(); ++it)
+    if (empty() == true)
+        return false;
+    if (equals(head->next->data, item, this->itemEqual))
     {
-        if (equals(*it, item, this->itemEqual) == true)
-        {
-            it.remove(removeItemData);
-            return true;
-        }
+        Node *deleteNode = head->next;
+        Node *nextNode = deleteNode->next;
+        head->next = nextNode;
+        nextNode->prev = head;
+        deleteNode->next = NULL;
+        deleteNode->prev = NULL;
+        if (removeItemData)
+            removeItemData(deleteNode->data);
+        delete deleteNode;
+        count--;
+        return true;
     }
-    return false;
+    else if (equals(tail->prev->data, item, this->itemEqual))
+    {
+        Node *deleteNode = tail->prev;
+        Node *prevNode = deleteNode->prev;
+        prevNode->next = tail;
+        tail->prev = prevNode;
+        deleteNode->next = NULL;
+        deleteNode->prev = NULL;
+        if (removeItemData)
+            removeItemData(deleteNode->data);
+        delete deleteNode;
+        count--;
+        return true;
+    }
+    else
+    {
+        Node *Current = head->next;
+        while (Current != tail)
+        {
+            if (equals(Current->data, item, this->itemEqual))
+            {
+                Node *nextNode = Current->next;
+                Node *prevNode = Current->prev;
+                prevNode->next = nextNode;
+                nextNode->prev = prevNode;
+                if (removeItemData)
+                    removeItemData(Current->data);
+                delete Current;
+                count--;
+                return true;
+            }
+            Current = Current->next;
+        }
+            return false;
+    }
 }
 
 template <class T>

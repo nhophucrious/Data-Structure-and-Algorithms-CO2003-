@@ -302,9 +302,9 @@ SLinkedList<T>::~SLinkedList()
 {
     removeInternalData();
     //YOUR CODE HERE: delete dummy nodes
-    if(head!=NULL)
+    if (head != NULL)
         delete head;
-    if(tail!=NULL)
+    if (tail != NULL)
         delete tail;
     count = 0;
 }
@@ -443,15 +443,26 @@ T SLinkedList<T>::removeAt(int index)
 template <class T>
 bool SLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
 {
-    for (SLinkedList<T>::Iterator it = this->begin(); it!=this->end();++it)
+    bool found = false;
+    Node *Current = head->next;
+    Node *Previous = head;
+    while(Current!=tail)
     {
-        if(equals(*it,item,this->itemEqual))
+        found = SLinkedList<T>::equals(Current->data, item, this->itemEqual);
+        if(found == true)
         {
-            {
-                it.remove(removeItemData);
-                return true;
-            }
+            Previous->next = Current->next;
+            if(Previous->next == tail)
+                tail->next = Previous;
+            Current->next = NULL;
+            if(removeItemData)
+                removeItemData(Current->data);
+            delete Current;
+            count--;
+            return true;
         }
+        Current = Current->next;
+        Previous = Previous->next;
     }
     return false;
 }
@@ -487,7 +498,7 @@ T &SLinkedList<T>::get(int index)
     if ((index < 0) || (index > count - 1))
         throw std::out_of_range("The index is out of range!");
     Node *ptr = head;
-    for(int i = -1; i < index;i++)
+    for (int i = -1; i < index; i++)
     {
         ptr = ptr->next;
     }
@@ -498,17 +509,16 @@ template <class T>
 int SLinkedList<T>::indexOf(T item)
 {
     //YOUR CODE HERE
-    if(empty() == true)
+    if (empty() == true)
         return -1;
     int index = 0;
     Node *temp = head->next;
-    while(temp!=tail)
+    while (temp != tail)
     {
-        if(equals(temp->data,item,this->itemEqual) == true)
+        if (equals(temp->data, item, this->itemEqual) == true)
             return index;
         index++;
         temp = temp->next;
-    
     }
     return -1;
 }
@@ -516,13 +526,13 @@ int SLinkedList<T>::indexOf(T item)
 template <class T>
 bool SLinkedList<T>::contains(T item)
 {
-    if(empty() == true)
+    if (empty() == true)
         return false;
 
     Node *temp = head->next;
-    while(temp!= tail)
+    while (temp != tail)
     {
-        if(equals((temp->data),item,this->itemEqual))
+        if (equals((temp->data), item, this->itemEqual))
             return true;
         temp = temp->next;
     }
@@ -532,7 +542,8 @@ bool SLinkedList<T>::contains(T item)
 template <class T>
 string SLinkedList<T>::toString(string (*item2str)(T &))
 {
-    if (count == 0) return "[]";
+    if (count == 0)
+        return "[]";
     stringstream ss;
     ss << "[";
     Node *ptr = head->next;
