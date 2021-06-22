@@ -13,7 +13,7 @@
 
 #ifndef IDECK_H
 #define IDECK_H
-
+#include<exception>
 class Underflow: public std::exception{
 private:
     string desc;

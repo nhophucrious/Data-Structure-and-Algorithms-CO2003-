@@ -39,11 +39,11 @@ double addRand(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int 
         for (int k = 0; k < ntries; k++)
         {
             int K = randomNumber(ptr_sizes[size]);
-            auto start = high_resolution_clock ::now();           //start counting time;
-            plist->add(K, 1);                                     // Do addfirst operation
-            auto end = high_resolution_clock ::now();             //end counting time
+            auto start = high_resolution_clock ::now();    //start counting time;
+            plist->add(K, 1);                              // Do addfirst operation
+            auto end = high_resolution_clock ::now();      //end counting time
             diff += chrono::duration<double>(end - start); //store and increase the differece
-            plist->removeAt(0);                                   // return the size before adding
+            plist->removeAt(0);                            // return the size before adding
         }
     }
     plist->clear(); // prepare to make a new list
@@ -134,7 +134,7 @@ double removeLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size
         diff += chrono::duration<double>(end - start);
         plist->add(1);
     }
-    plist->clear(); 
+    plist->clear();
     diff /= (nexec);
     return diff.count();
 }
@@ -152,11 +152,11 @@ double removeRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size
         for (int k = 0; k < ntries; k++)
         {
             int K = randomNumber(ptr_sizes[size]);
-            auto start = high_resolution_clock ::now(); //start counting time;
-            plist->removeAt(K);                         // Do addfirst operation
-            auto end = high_resolution_clock ::now();   //end counting time
+            auto start = high_resolution_clock ::now();    //start counting time;
+            plist->removeAt(K);                            // Do addfirst operation
+            auto end = high_resolution_clock ::now();      //end counting time
             diff += chrono::duration<double>(end - start); //store and increase the differece
-            plist->add(1);                                        //restore the before size
+            plist->add(1);                                 //restore the before size
         }
     }
     plist->clear(); // prepare to make a new list
@@ -177,10 +177,10 @@ double getRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, i
         for (int k = 0; k < ntries; k++)
         {
             int K = randomNumber(ptr_sizes[size]);
-            auto start = high_resolution_clock ::now(); //start counting time;
-            plist->get(K);                              // Do addfirst operation
-            auto end = high_resolution_clock ::now();   //end counting time
-            diff += chrono::duration<double>(end - start); //store and increase the differece                                        //restore the before size                    
+            auto start = high_resolution_clock ::now();    //start counting time;
+            plist->get(K);                                 // Do addfirst operation
+            auto end = high_resolution_clock ::now();      //end counting time
+            diff += chrono::duration<double>(end - start); //store and increase the differece                                        //restore the before size
         }
     }
     plist->clear(); // prepare to make a new list
@@ -194,6 +194,7 @@ void meter(IList<int> *plist, string csvfile, int *ptr_sizes, int nsizes, int ne
     std::ofstream myfile;
     myfile.open(csvfile);
     myfile << "size,addfirst(ms),addlast(ms),addrandpos(ms),removefirst(ms),removelast(ms),removerandpos(ms),getrandpos(ms),\n";
+    cout << "index / nsizes:\t n->,\tadd(0, *),\tadd(*),  \tadd(k, *),\tremoveAt(0),\tremoveAt(n - 1), \tremoveAt(k), \tget(k)" << endl;
     for (int i = 0; i < nsizes; i++)
     {
         string af = to_string(addFirst(plist, csvfile, ptr_sizes, i, nexec, ntries));
@@ -204,6 +205,11 @@ void meter(IList<int> *plist, string csvfile, int *ptr_sizes, int nsizes, int ne
         string rrp = to_string(removeRandPos(plist, csvfile, ptr_sizes, i, nexec, ntries));
         string grp = to_string(getRandPos(plist, csvfile, ptr_sizes, i, nexec, ntries));
         myfile << to_string(ptr_sizes[i]) << "," << af << "," << al << "," << arp << "," << rf << "," << rl << "," << rrp << "," << grp << '\n';
+
+        if (i % 10 == 0)
+        {
+            cout << "[" << i << "/100]"<< "\t" << ptr_sizes[i] << "\t" << af << "\t" << al << "\t" << arp << "\t" << rf << "\t" << rl << "\t" << rrp <<"\t" << grp << endl;
+        }
     }
     myfile.close();
     cout << "\t\t\t Printing the values into CSV files..." << endl;

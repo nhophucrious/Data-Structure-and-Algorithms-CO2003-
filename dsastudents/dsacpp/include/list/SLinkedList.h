@@ -283,8 +283,7 @@ SLinkedList<T>::SLinkedList(const SLinkedList<T> &list)
 {
     //Initialize to the empty condition
     //YOUR CODE HERE:  create two dummy nodes: head and tail
-    head->next = tail;
-    tail->next = head;
+    head = tail = new Node();
     copyFrom(list);
 }
 
@@ -542,8 +541,6 @@ bool SLinkedList<T>::contains(T item)
 template <class T>
 string SLinkedList<T>::toString(string (*item2str)(T &))
 {
-    if (count == 0)
-        return "[]";
     stringstream ss;
     ss << "[";
     Node *ptr = head->next;

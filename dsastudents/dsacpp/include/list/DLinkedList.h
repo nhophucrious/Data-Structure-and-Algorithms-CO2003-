@@ -345,8 +345,10 @@ template <class T>
 DLinkedList<T>::DLinkedList(const DLinkedList<T> &list)
 {
     //YOUR CODE HERE
-    head->next = tail;
-    tail->prev = head;
+    head = new Node();
+    tail = new Node();
+    // head->next = tail;
+    // tail->prev = head;
     copyFrom(list);
 }
 
@@ -622,8 +624,6 @@ bool DLinkedList<T>::contains(T item)
 template <class T>
 string DLinkedList<T>::toString(string (*item2str)(T &))
 {
-    if (count == 0)
-        return "[]";
     stringstream ss;
     ss << "[";
     Node *ptr = head->next;
