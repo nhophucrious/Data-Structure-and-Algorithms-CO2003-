@@ -21,6 +21,7 @@ int randomNumber(int size)
 {
     int lower = 0;
     int upper = size - 1;
+    srand(time(NULL));
     int number = (rand() % (upper - lower) + lower);
     return number;
 }
@@ -194,7 +195,7 @@ void meter(IList<int> *plist, string csvfile, int *ptr_sizes, int nsizes, int ne
     std::ofstream myfile;
     myfile.open(csvfile);
     myfile << "size,addfirst(ms),addlast(ms),addrandpos(ms),removefirst(ms),removelast(ms),removerandpos(ms),getrandpos(ms),\n";
-    cout << "index / nsizes:\t n->,\tadd(0, *),\tadd(*),  \tadd(k, *),\tremoveAt(0),\tremoveAt(n - 1), \tremoveAt(k), \tget(k)" << endl;
+    cout << "index/nsizes:\t" << setw(6) << 'n' << "\t->" << setw(14) << "add(0,*)," << setw(14) << "add()," << setw(14) << "add(k,)," << setw(14) << "removeAt(0)," << setw(15) << "removeAt(n-1)," << setw(14) << "removeAt(k)," << setw(13) << "get(k)" << endl;
     for (int i = 0; i < nsizes; i++)
     {
         string af = to_string(addFirst(plist, csvfile, ptr_sizes, i, nexec, ntries));
@@ -205,10 +206,18 @@ void meter(IList<int> *plist, string csvfile, int *ptr_sizes, int nsizes, int ne
         string rrp = to_string(removeRandPos(plist, csvfile, ptr_sizes, i, nexec, ntries));
         string grp = to_string(getRandPos(plist, csvfile, ptr_sizes, i, nexec, ntries));
         myfile << to_string(ptr_sizes[i]) << "," << af << "," << al << "," << arp << "," << rf << "," << rl << "," << rrp << "," << grp << '\n';
-
-        if (i % 10 == 0)
+        if (!(i % 10))
+            cout << '[' << setw(2) << i << "/100]:\t" << setw(6) << ptr_sizes[i] << "\t->";
+        if (!(i % 10))
         {
-            cout << "[" << i << "/100]"<< "\t" << ptr_sizes[i] << "\t" << af << "\t" << al << "\t" << arp << "\t" << rf << "\t" << rl << "\t" << rrp <<"\t" << grp << endl;
+            cout << fixed << setw(13) << setprecision(8) << af << ',';
+            cout << fixed << setw(13) << setprecision(8) << al << ',';
+            cout << fixed << setw(13) << setprecision(8) << arp << ',';
+            cout << fixed << setw(13) << setprecision(8) << rf << ',';
+            cout << fixed << setw(13) << setprecision(8) << rl << ',';
+            cout << fixed << setw(13) << setprecision(8) << rrp << ',';
+            cout << fixed << setw(13) << setprecision(8) << grp << ',';
+            cout << endl;
         }
     }
     myfile.close();

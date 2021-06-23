@@ -13,7 +13,6 @@
 
 #ifndef AVLTEST_H
 #define AVLTEST_H
-
 #include "doctest.h"
 #include "tree/AVL.h"
 
@@ -346,6 +345,26 @@ TEST_CASE( "AVL<int, int*>: removing items" ) {
         REQUIRE(nodes1.empty() == true);
         List<string> factor1 = tree.bfactor();
         REQUIRE(factor1.empty() == true);
+    }
+}
+TEST_CASE("Randomly generated test cases") {
+    #define NUM_TESTS 1000
+    AVL<int, int*> tree;
+    srand(time(0));
+    int size = 0;
+    for (int test = 0; test < NUM_TESTS; test++) {
+        if(rand() & 1) {
+            tree.add(rand() % NUM_TESTS);
+            REQUIRE(tree.size() == ++size);
+        }
+        else {
+            if (size == 0) continue;
+            bool success;
+            tree.remove(rand() % NUM_TESTS, &success);
+            if (success) REQUIRE(tree.size() == --size);
+            else REQUIRE(tree.size() == size);
+        }
+        REQUIRE(tree.size() < 1 << tree.height());
     }
 }
 #endif /* AVLTEST_H */

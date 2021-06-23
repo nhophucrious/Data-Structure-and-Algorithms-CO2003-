@@ -174,18 +174,38 @@ private:
 
     XNode *rebalance(XNode *root)
     {
-        if (root->isEH() == true)
-        {
+        if(root == NULL)
             return root;
-        }
-        else if (root->isLH() == true)
+        root->updateHeight();
+        if(root->isBalanced())
+            return root;
+        if (root->isRH())
         {
-            return rotateRight(root);
+            XNode *rightTree = root->pRight;
+            if(rightTree->isRH())
+            {
+                return rotateLeft(root);
+            }
+            else
+            {
+                root->pRight = rotateRight(root->pRight);
+                return rotateLeft(root);
+            }
         }
-        else
+        else if(root->isLH())
         {
-            return rotateLeft(root);
+            XNode *leftTree = root->pLeft;
+            if(leftTree->isLH())
+            {
+                return rotateRight(root);
+            }
+            else
+            {
+                root->pLeft = rotateLeft(root->pLeft);
+                return rotateRight(root);
+            }
         }
+        return root;
     }
 
     XNode *add(XNode *root, XNode *newNode)
@@ -203,27 +223,7 @@ private:
         {
             root->pRight = add(root->pRight, newNode);
         }
-
-        root->updateHeight();
-        if (root->bfactor < -1 && newNode->data.key < root->pLeft->data.key)
-        {
-            return rotateRight(root);
-        }
-        if (root->bfactor > 1 && newNode->data.key > root->pRight->data.key)
-        {
-            return rotateLeft(root);
-        }
-        if (root->bfactor < -1 && newNode->data.key > root->pLeft->data.key)
-        {
-            root->pLeft = rotateLeft(root->pLeft);
-            return rotateRight(root);
-        }
-        if (root->bfactor > 1 && newNode->data.key < root->pRight->data.key)
-        {
-            root->pRight = rotateRight(root->pRight);
-            return rotateLeft(root);
-        }
-        return root;
+        return rebalance(root);
     }
 
     XNode *remove(XNode *root, K key, bool &success, V &retValue)
@@ -265,31 +265,7 @@ private:
                 retValue = backupValue;
             }
         }
-        if (root == NULL)
-            return root;
-        root->updateHeight();
-        int bf = root->bfactor;
-        if (bf < -1)
-        {
-            if (BST<K, V>::height(root->pLeft->pLeft) - BST<K, V>::height(root->pLeft->pRight) >= 0)
-                return rotateRight(root);
-            else
-            {
-                root->pLeft = rotateLeft(root->pLeft);
-                return rotateRight(root);
-            }
-        }
-        else if (bf > 1)
-        {
-            if (BST<K, V>::height(root->pRight->pLeft) - BST<K, V>::height(root->pRight->pRight) <= 0)
-                return rotateLeft(root);
-            else
-            {
-                root->pRight = rotateRight(root->pRight);
-                return rotateLeft(root);
-            }
-        }
-        return root;
+        return rebalance(root);
     }
 };
 
