@@ -182,7 +182,7 @@ private:
         if (root->isRH())
         {
             XNode *rightTree = root->pRight;
-            if(rightTree->isRH())
+            if(rightTree->isRH() || rightTree->isEH())
             {
                 return rotateLeft(root);
             }
@@ -195,7 +195,7 @@ private:
         else if(root->isLH())
         {
             XNode *leftTree = root->pLeft;
-            if(leftTree->isLH())
+            if(leftTree->isLH()||leftTree->isEH())
             {
                 return rotateRight(root);
             }
@@ -243,6 +243,15 @@ private:
         }
         else
         {
+            // if(root->pLeft == NULL && root->pRight == NULL)
+            // {
+            //     retValue = root->data.value;
+            //     success == true;
+            //     root->data.value = 0;
+            //     count--;
+            //     delete root;
+            //     return NULL;
+            // }
             if (root->pLeft == NULL || root->pRight == NULL)
             {
                 XNode *newRoot = ((root->pLeft == NULL) ? root->pRight : root->pLeft);
