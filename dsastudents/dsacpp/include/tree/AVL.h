@@ -243,15 +243,6 @@ private:
         }
         else
         {
-            // if(root->pLeft == NULL && root->pRight == NULL)
-            // {
-            //     retValue = root->data.value;
-            //     success == true;
-            //     root->data.value = 0;
-            //     count--;
-            //     delete root;
-            //     return NULL;
-            // }
             if (root->pLeft == NULL || root->pRight == NULL)
             {
                 XNode *newRoot = ((root->pLeft == NULL) ? root->pRight : root->pLeft);
