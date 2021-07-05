@@ -524,10 +524,21 @@ T &DLinkedList<T>::get(int index)
     if ((index < 0) || (index > count - 1) || empty() == true)
         throw std::out_of_range("The index is out of range!");
 
-    Node *prevNode = getPreviousNodeOf(index);
-    //HERE: prevNode points to previous item (at index - 1); ready for get
-    //YOUR CODE HERE
-    return prevNode->next->data;
+    if (index == 0)
+    {
+        return head->next->data;
+    }
+    else if (index == count - 1)
+    {
+        return tail->prev->data;
+    }
+    else
+    {
+        Node *prevNode = getPreviousNodeOf(index);
+        //HERE: prevNode points to previous item (at index - 1); ready for get
+        //YOUR CODE HERE
+        return prevNode->next->data;
+    }
 }
 
 template <class T>
@@ -600,7 +611,7 @@ bool DLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
             }
             Current = Current->next;
         }
-            return false;
+        return false;
     }
 }
 

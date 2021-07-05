@@ -1,16 +1,57 @@
 #include <iostream>
-#include <tree/AVL.h>
-#include <tree/BST.h>
-#include <list/DLinkedList.h>
-#include "geom/Point3D.h"
-
+using namespace std;
+#include "list/SLinkedList.h"
+#include"list/DLinkedList.h"
+#include "sorting/BubbleSort.h"
+#include "sorting/ShellSort.h"
+#include "sorting/StraightInsertionSort.h"
+#include "sorting/StraightSelectionSort.h"
+#include "heap/Heap.h"
+#include "util/sampleFunc.h"
+#include "sorting/BubbleSortDemo.h"
+#include "sorting/StraightInsertionSortDemo.h"
+#include "sorting/StraightSelectionSortDemo.h"
+#include "sorting/HeapSortDemo.h"
+#include "sorting/ListSortDemo.h"
+#include "hash/XHashMapDemo.h"
+#include "hash/XHashMap.h"
 int main()
 {
-    int ptr[] = {10,52,98,32,68,92,40,13,42,63,99,100};
-    AVL<int, int*> tree;
-    for(int key: ptr) tree.add(key);
-    tree.println();
-    cout << endl;
-    cout << "Value is: " << tree.remove(13) << endl;
-    tree.println();
+    simpleMap();
+    return 0;
+}
+
+vector<bool> check(size, false);
+vector<uint8> sym;
+vector<float> symfreq;
+for(int i = 0; i < size; i++)
+{
+    if(check[i] == true) continue;
+    int count = 1;
+    sym.push_back(data[i]);
+    for (int j = i + 1; j < n; j++)
+    {
+        if(data[j] == data[i])
+        {
+            check[j] = true;
+            count++;
+        }
+    }
+    symfreq.push_back(count);
+}
+
+vector<bool>met(sym.size(),false);
+int count = 0;
+while(count < sym.size())
+{
+    auto it = find(sym.begin(),sym.end(),min);
+    int index = it - sym.begin();
+    check[index] = true;
+    min = 999;
+    for (int i = 1; i < arr.size(); i++)
+    {
+        if(arr[i] < min && check[i] == false)
+            min = arr[i];
+    }
+    count++;
 }

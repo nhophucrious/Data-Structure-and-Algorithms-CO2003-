@@ -445,16 +445,16 @@ bool SLinkedList<T>::removeItem(T item, void (*removeItemData)(T))
     bool found = false;
     Node *Current = head->next;
     Node *Previous = head;
-    while(Current!=tail)
+    while (Current != tail)
     {
         found = SLinkedList<T>::equals(Current->data, item, this->itemEqual);
-        if(found == true)
+        if (found == true)
         {
             Previous->next = Current->next;
-            if(Previous->next == tail)
+            if (Previous->next == tail)
                 tail->next = Previous;
             Current->next = NULL;
-            if(removeItemData)
+            if (removeItemData)
                 removeItemData(Current->data);
             delete Current;
             count--;
@@ -496,6 +496,23 @@ T &SLinkedList<T>::get(int index)
 {
     if ((index < 0) || (index > count - 1))
         throw std::out_of_range("The index is out of range!");
+    if (index == 0)
+    {
+        return head->next->data;
+    }
+    else if (index == count - 1)
+    {
+        return tail->next->data;
+    }
+    else
+    {
+        Node *ptr = head;
+        for (int i = -1; i < index; i++)
+        {
+            ptr = ptr->next;
+        }
+        return (ptr->data);
+    }
     Node *ptr = head;
     for (int i = -1; i < index; i++)
     {

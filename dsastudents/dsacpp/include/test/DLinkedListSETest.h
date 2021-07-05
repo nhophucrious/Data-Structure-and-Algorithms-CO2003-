@@ -15,8 +15,9 @@
 #define DLINKEDLISTSETEST_H
 #include "doctest.h"
 #include "list/DLinkedList.h"
-//#include "sorting/DLinkedListSE.h"
+#include "sorting/DLinkedListSE.h"
 #include "util/Point.h"
+#include "util/ArrayLib.h"
 
 TEST_CASE( "DLinkedListSE<int>[1]: adding items, then sorting" ) {
     int item[]      = {98, 65, 22, 11, 34, 28, 19, 8};

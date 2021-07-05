@@ -58,7 +58,7 @@ public:
             for (int j = gap; j < size; j++)
             {
                 temp = array[j];
-                for (i = j; i >= gap && comparator(array[i - gap],temp) == 1 ; i -= gap)
+                for (i = j; i >= gap && (*comparator)(array[i - gap],temp) == 1 ; i -= gap)
                 {
                     array[i] = array[i - gap];
                 }

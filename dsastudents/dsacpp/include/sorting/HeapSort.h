@@ -16,19 +16,24 @@
 #include "sorting/ISort.h"
 #include "heap/Heap.h"
 
-template<class T>
-class HeapSort: private Heap<T>, public ISort<T>{
+template <class T>
+class HeapSort : private Heap<T>, public ISort<T>
+{
 public:
-    HeapSort(   int (*comparator)(T& , T&)=0, 
-                void (*deleteUserData)(Heap<T>*)=0 ):
-                Heap<T>(comparator, deleteUserData){
+    HeapSort(int (*comparator)(T &, T &) = 0,
+             void (*deleteUserData)(Heap<T> *) = 0) : Heap<T>(comparator, deleteUserData)
+    {
     }
-    void sort(T array[], int size, int (*comparator)(T&,T&)=0){  
+    void sort(T array[], int size, int (*comparator)(T &, T &) = 0)
+    {
         //YOUR CODE HERE
-    }         
-                
+        Heap<T> minHeap(comparator);
+        minHeap.heapify(array, size);
+        for (int i = 0; i < size; i++)
+        {
+            array[i] = minHeap.pop();
+        }
+    }
 };
 
-
 #endif /* HEAPSORT_H */
-

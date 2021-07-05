@@ -21,11 +21,11 @@ public:
     void sort(T array[], int size, int (*comparator)(T&,T&)){
         int i, j;
         T key;
-        for (i = 0; i < size;i++)
+        for (i = 1; i < size;i++)
         {
             key = array[i];
             j = i - 1;
-            while(j>=0 && comparator(array[j],key) == 1)
+            while(j>=0 && (*comparator)(array[j],key) == 1)
             {
                 array[j + 1] = array[j];
                 j--;

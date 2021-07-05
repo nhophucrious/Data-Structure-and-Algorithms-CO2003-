@@ -14,7 +14,7 @@
 #ifndef SLINKEDLISTSE_H
 #define SLINKEDLISTSE_H
 
-#include "list/DLinkedList.h"
+#include "list/SLinkedList.h"
 #include "sorting/ISort.h"
 
 template <class T>
@@ -76,16 +76,15 @@ protected:
     {
         //YOUR CODE HERE
         typename SLinkedList<T>::Node *slow, *fast;
-        if (head == NULL && head->next == NULL)
+        if (first == NULL)
         {
-            first = NULL;
-            second = head;
+            return;
         }
         else
         {
-            slow = head;
-            fast = head->next;
-            while(fast!=NULL)
+            slow = first;
+            fast = slow->next;
+            while (fast != NULL)
             {
                 fast = fast->next;
                 if(fast!=NULL)
@@ -95,21 +94,48 @@ protected:
                 }
             }
         }
-        first = head;
         second = slow->next;
         slow->next = NULL;
     }
     void merge(typename SLinkedList<T>::Node *&first, typename SLinkedList<T>::Node *&second, int (*comparator)(T &, T &) = 0)
     {
-        //YOUR CODE HERE
-        if(comparator(first->data,second->data) == 1)
+        if(first == NULL || second == NULL)
+            return;
+        typename SLinkedList<T>::Node *temp = NULL;
+        if(compare(first->data,second->data,comparator) == -1)
         {
-            first->next = merge(first->next, second);
+            temp = first;
+            first = first->next;
         }
         else
         {
-            second->next = merge(first, second->next);
+            temp = second;
+            second = second->next;
         }
+        typename SLinkedList<T>::Node *ptr = temp;
+        while(first!=NULL && second!=NULL)
+        {
+            if(compare(first->data, second->data, comparator) == -1)
+            {
+                ptr->next = first;
+                first = first->next;
+            }
+            else
+            {
+                ptr->next = second;
+                second = second->next;
+            }
+            ptr = ptr->next;
+        }
+        if(first == NULL && second!=NULL)
+        {
+            ptr->next = second;
+        }
+        if(second == NULL && first!=NULL)
+        {
+            ptr->next = first;
+        }
+        first = temp;
     }
 };
 

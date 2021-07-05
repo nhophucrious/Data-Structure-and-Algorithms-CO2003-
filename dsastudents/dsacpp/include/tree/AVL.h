@@ -195,13 +195,13 @@ private:
         else if(root->isLH())
         {
             XNode *leftTree = root->pLeft;
-            if(leftTree->isLH()||leftTree->isEH())
+            if(leftTree->isLH()||leftTree->isEH()) // LeftLeft - EHLeft
             {
                 return rotateRight(root);
             }
             else
             {
-                root->pLeft = rotateLeft(root->pLeft);
+                root->pLeft = rotateLeft(root->pLeft); //Right of Left
                 return rotateRight(root);
             }
         }

@@ -28,7 +28,7 @@ public:
             min = i;
             for (j = i + 1; j < size;j++)
             {
-                if(comparator(array[j],array[i]) == -1)
+                if((*comparator)(array[j],array[min]) == -1)
                     min = j;
             }
             T temp = array[min];

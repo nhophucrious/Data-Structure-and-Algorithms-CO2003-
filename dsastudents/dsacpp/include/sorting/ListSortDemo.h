@@ -26,8 +26,19 @@ int sortIntComparator(int& lhs, int& rhs){
 }
 void listSortDemo1(){
     int items[] = {18, 5, 12, 7, 89, 1, 3, 24};
-    DLinkedListSE<int> list;
+    SLinkedListSE<int> list;
     for(int i=0; i < 8; i++) list.add(items[i]);
+    list.println();
+    list.sort();
+    list.println();
+    list.sort(&sortIntComparator);
+    list.println();
+}
+
+void listSortDemo23(){
+    int items[] = {5,7,22,13,1,4,9};
+    DLinkedListSE<int> list;
+    for(int i=0; i < 7; i++) list.add(items[i]);
     list.println();
     list.sort();
     list.println();

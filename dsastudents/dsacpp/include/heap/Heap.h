@@ -4,31 +4,32 @@
  * and open the template in the editor.
  */
 
-/* 
- * File:   Heap.h
- * Author: LTSACH
- *
- * Created on 22 August 2020, 18:18
- */
+/*
+  * File:   Heap.h
+  * Author: LTSACH
+  *
+  * Created on 22 August 2020, 18:18
+  */
 
 #ifndef HEAP_H
 #define HEAP_H
+#include <iostream>
 #include <memory.h>
-#include "heap/IHeap.h"
+#include "IHeap.h"
 #include <sstream>
 /*
- * function pointer: int (*comparator)(T& lhs, T& rhs)
- *      compares objects of type T given in lhs and rhs.
- *      return: sign of (lhs - rhs)
- *              -1: of lhs < rhs
- *              0 : lhs == rhs
- *              +1: ls > rhs
- * 
- * function pointer: void (*deleteUserData)(Heap<T>* pHeap)
- *      remove user's data in case that T is a pointer type
- *      Users should pass &Heap<T>::free for "deleteUserData"
- * 
- */
+   * function pointer: int (*comparator)(T& lhs, T& rhs)
+   *      compares objects of type T given in lhs and rhs.
+   *      return: sign of (lhs - rhs)
+   *              -1: of lhs < rhs
+   *              0 : lhs == rhs
+   *              +1: ls > rhs
+   *
+   * function pointer: void (*deleteUserData)(Heap<T>* pHeap)
+   *      remove user's data in case that T is a pointer type
+   *      Users should pass &Heap<T>::free for "deleteUserData"
+   *
+   */
 template <class T>
 class Heap : public IHeap<T>
 {
@@ -66,7 +67,7 @@ public:
 
     void println(string (*item2str)(T &) = 0)
     {
-        cout << toString(item2str) << endl;
+        std::cout << toString(item2str) << endl;
     }
 
     Iterator begin()
@@ -230,16 +231,16 @@ void Heap<T>::push(T item)
      /  \
     15   13
     /
-  25 
+  25
  =>
       25
      /  \
     18   13
     /
-  15 
+  15
 => array: [25, 18, 13, 15, , ]
            0   1    2   3
- 
+
  */
 template <class T>
 T Heap<T>::pop()
@@ -279,16 +280,14 @@ void Heap<T>::remove(T item, void (*removeItemData)(T))
 {
     //YOUR CODE HERE
     int foundIndex = getItem(item);
-    if(foundIndex == -1)
+    if (foundIndex == -1)
         return;
-    if(removeItemData!=0)
+    if (removeItemData != 0)
         removeItemData(elements[foundIndex]);
-    int shiftCount = (count - 1) - foundIndex;
-    memcpy(&elements[foundIndex], &elements[foundIndex + 1], shiftCount * sizeof(T));
-    count--;
 
-    int startOldData = foundIndex;
+    int startOldData = foundIndex + 1;
     int lastOldData = count - 1;
+    count = foundIndex;
     for (int i = startOldData; i <= lastOldData; i++)
     {
         push(elements[i]);
@@ -365,7 +364,7 @@ string Heap<T>::toString(string (*item2str)(T &))
     }
     return os.str();
 }
-
+//TODO:
 //////////////////////////////////////////////////////////////////////
 //////////////////////// (private) METHOD DEFNITION //////////////////
 //////////////////////////////////////////////////////////////////////
@@ -406,12 +405,13 @@ void Heap<T>::reheapUp(int position)
     //YOUR CODE HERE
     if (position <= 0)
         return;
-    int parent = (position-1)/2;
+    int parent = (position - 1) / 2;
     if (aLTb(this->elements[position], this->elements[parent]))
     {
-        swap(position,parent);
+        swap(position, parent);
+        reheapUp(parent);
     }
-    reheapUp(parent);
+    
 }
 
 template <class T>
@@ -421,11 +421,11 @@ void Heap<T>::reheapDown(int position)
     int leftChildIndex = 2 * position + 1;
     int rightChildIndex = 2 * position + 2;
     int smallest = position;
-    if (leftChildIndex < count && aLTb(elements[leftChildIndex],elements[position]) == true)
+    if (leftChildIndex < count && aLTb(elements[leftChildIndex], elements[position]) == true)
         smallest = leftChildIndex;
-    if (rightChildIndex < count && aLTb(elements[rightChildIndex],elements[smallest]) == true)
+    if (rightChildIndex < count && aLTb(elements[rightChildIndex], elements[smallest]) == true)
         smallest = rightChildIndex;
-    if(smallest!=position && smallest < count-1)
+    if (smallest != position && smallest < count)
     {
         swap(smallest, position);
         reheapDown(smallest);

@@ -27,7 +27,7 @@ public:
         {
             for (int j = i + 1; j < size;j++)
             {
-                if (comparator(array[j], array[i]) == -1)
+                if ((*comparator)(array[j], array[i]) == -1)
                 {
                     T temp = array[i];
                     array[i] = array[j];

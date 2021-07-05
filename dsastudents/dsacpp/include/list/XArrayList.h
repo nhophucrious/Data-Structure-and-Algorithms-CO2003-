@@ -35,7 +35,8 @@ protected:
 public:
     XArrayList(
             void (*deleteUserData)(XArrayList<T>*)=0, 
-            bool (*itemEqual)(T&, T&)=0 );
+            bool (*itemEqual)(T&, T&)=0,
+            int capacity=10);
     XArrayList(const XArrayList<T>& list);
     XArrayList<T>& operator=(const XArrayList<T>& list);
     ~XArrayList();
@@ -167,8 +168,9 @@ public:
 template<class T>
 XArrayList<T>::XArrayList(
         void (*deleteUserData)(XArrayList<T>*), 
-        bool (*itemEqual)(T&, T&) ) {
-    capacity = 10; //initial size = 10; auto-inc if needed
+        bool (*itemEqual)(T&, T&), 
+        int capacity) {
+    this->capacity = capacity; //initial size = 10; auto-inc if needed
     data = new T[capacity];
     count = 0;
     this->itemEqual = itemEqual;
@@ -229,7 +231,7 @@ void XArrayList<T>::add(T e) {
 }
 template<class T>
 void XArrayList<T>::add(int index, T e) {
-    ensureCapacity(index);
+    ensureCapacity(count); //June 16: ensureCapacity(index) => ensureCapacity(count)
 
     for(int idx=count-1; idx >= index; idx-- ){
         data[idx + 1] = data[idx];
@@ -238,6 +240,14 @@ void XArrayList<T>::add(int index, T e) {
     count += 1;
 }
 
+/*
+ [10, 12, 15, 50]; delete 12
+ shift 15 to left
+ shift 50 to left
+ * 
+ * worst case: how many items to be shifted>??? 
+ 
+ */
 template<class T>
 T XArrayList<T>::removeAt(int index){
     checkIndex(index);
@@ -350,10 +360,10 @@ void XArrayList<T>::ensureCapacity(int index){
     if(index >= capacity){
         //re-allocate 
         int old_capacity = capacity;
-        capacity = old_capacity + (old_capacity >> 2);
+        capacity = old_capacity + (old_capacity >> 1);
         try{
             T* new_data = new T[capacity];
-            memcpy(new_data, data, capacity*sizeof(T));
+            memcpy(new_data, data, old_capacity*sizeof(T));
             delete []data;
             data = new_data;
         }
