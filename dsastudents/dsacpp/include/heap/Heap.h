@@ -15,7 +15,7 @@
 #define HEAP_H
 #include <iostream>
 #include <memory.h>
-#include "IHeap.h"
+#include "heap/IHeap.h"
 #include <sstream>
 /*
    * function pointer: int (*comparator)(T& lhs, T& rhs)
