@@ -53,6 +53,7 @@ public:
     void add(K key, V value=0);
     V remove(K key, bool* success=0);
     V search(K key, bool& found); //return NULL if not found
+    Node *searching(Node*root,K key);
     int size();
     int height();
     void clear();

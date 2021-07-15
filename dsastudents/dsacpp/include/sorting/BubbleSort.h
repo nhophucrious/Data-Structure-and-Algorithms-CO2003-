@@ -23,17 +23,28 @@ public:
     void sort(T array[], int size, int (*comparator)(T &, T &))
     {
         //YOUR CODE HERE
-        for (int i = 0; i < size; i++)
+        int current, walker;
+        bool flag;
+
+        current = 0;
+        flag = false;
+        while ((current < (size - 1)) && (flag == false))
         {
-            for (int j = i + 1; j < size;j++)
+            walker = size - 1;            //start from the last and backward
+            flag = true;                  //for testing if the input already in ascending order
+            while (walker > current)
             {
-                if ((*comparator)(array[j], array[i]) == -1)
+                if (comparator(array[walker], array[walker - 1]) < 0)
                 {
-                    T temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
+                    flag = false;
+                    //swap:
+                    T temp = array[walker];
+                    array[walker] = array[walker - 1];
+                    array[walker - 1] = temp;
                 }
+                walker -= 1;
             }
+            current += 1;
         }
     }
 };

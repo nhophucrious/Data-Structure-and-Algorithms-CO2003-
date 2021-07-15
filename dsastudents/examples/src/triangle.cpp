@@ -3,6 +3,7 @@
 
 #include "geom/Point3D.h"
 #include "geom/Vector3D.h"
+
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -21,5 +22,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-
- 

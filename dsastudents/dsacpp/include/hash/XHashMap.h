@@ -226,49 +226,27 @@ template <class K, class V>
 V XHashMap<K, V>::put(K key, V value)
 {
     //YOUR CODE HERE
-
-    /*
-    *   Case 1: if Entry with index is not exist => make newEntry -> increase size -> ensureLoadFactor
-    *   Case 2: Entry with index exist => loop the linkedlist of entries
-    *       2a: if found -> update and return value;
-    *       2b  if not found -> make newEntry and add to the last -> increase size -> ensureLoadFactor
-    */
-    V returnVal = 0;
-    int index = (*hashCode)(key, capacity);
-    if (table[index] == NULL)
+    int index = this->hashCode(key, capacity);
+    Entry *entry = table[index];
+    while (entry != NULL)
     {
-        Entry *newEntry = new Entry(key, value);
-        table[index] = newEntry;
-        count++;
-        this->ensureLoadFactor(count); // make sure the size is = 0.75*loadfactor
-        returnVal = value;
+        if (keyEQ(entry->key, key))
+        {
+            V oldValue = entry->value;
+            entry->value = value;
+            return oldValue;
+        }
+        entry = entry->next;
     }
-    else
+    Entry *newEntry = new Entry(key, value, NULL, table[index]);
+    if (table[index] != NULL)
     {
-        bool check = false; //to check if found an Node of entry with exact key in list of entry at index
-        Entry *targetEntry = this->table[index];
-        Entry *prevEntry = NULL;
-        while (targetEntry != NULL)
-        {
-            if (keyEQ(targetEntry->key, key) == true) // a loop to find an entry has key
-            {
-                returnVal = targetEntry->value; // get the old value of entry;
-                targetEntry->value = value;     // update the new value;
-                check = true;
-            }
-            prevEntry = targetEntry;
-            targetEntry = targetEntry->next;
-        }
-        if (check == false) // if exist entry at index but none of its keys match
-        {
-            Entry *newEntry = new Entry(key, value, prevEntry, NULL);
-            prevEntry->next = newEntry;
-            count++;
-            this->ensureLoadFactor(count);
-            returnVal = newEntry->value;
-        }
+        table[index]->prev = newEntry;
     }
-    return returnVal;
+    table[index] = newEntry;
+    count++;
+    ensureLoadFactor(count);
+    return value;
 }
 
 template <class K, class V>
@@ -297,7 +275,7 @@ template <class K, class V>
 V &XHashMap<K, V>::get(K key)
 {
     //YOUR CODE HERE
-    int index = (*hashCode)(key, this->capacity);
+    int index = this->hashCode(key, this->capacity);
     Entry *entry = table[index];
     while (entry != NULL)
     {
@@ -307,7 +285,7 @@ V &XHashMap<K, V>::get(K key)
     }
     //IF key: not found
     stringstream os;
-    os << "key (" << entry->key << ") is not found";
+    os << "key (" << key << ") is not found";
     throw KeyNotFound(os.str());
 }
 
@@ -315,94 +293,126 @@ template <class K, class V>
 V XHashMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
 {
     //YOUR CODE HERE
-
-    int index = (*hashCode)(key, this->capacity);
-    if (table[index] == NULL)
-    {
-        //IF key: not found
-        stringstream os;
-        Entry *entry = table[index];
-        os << "key (" << entry->key << ") is not found";
-        throw KeyNotFound(os.str());
-    }
-    V returnVal = 0;
+    int index = hashCode(key, capacity);
     Entry *entry = table[index];
-    if (entry->next == NULL) // if no collision -> decrease size, and return value
+    while (entry != 0)
     {
-        if (deleteKeyInMap != NULL)
-            deleteKeyInMap(entry->key);
-        returnVal = entry->value;
-        count--;
-        table[index] = NULL;
-        delete entry;
-    }
-    else // if Collision and -> delete one of them return value
-    {
-        while (entry != NULL)
+        if (keyEQ(entry->key, key))
         {
-            if (keyEQ(entry->key, key))
+
+            //remove head
+            if (entry->prev == 0)
             {
-                if (deleteKeyInMap != NULL)
+                Entry *newHead = entry->next;
+                if (newHead != 0)
+                    newHead->prev = 0;
+                table[index] = newHead;
+                entry->next = 0;
+
+                V value = entry->value;
+                if (deleteKeyInMap != 0)
                     deleteKeyInMap(entry->key);
-                returnVal = entry->value;
-                break;
+                delete entry;
+                return value;
             }
-            entry = entry->next;
+            //remove tail
+            else if (entry->next == 0)
+            {
+                Entry *prev = entry->prev;
+                prev->next = 0;
+                entry->prev = 0;
+
+                V value = entry->value;
+                if (deleteKeyInMap != 0)
+                    deleteKeyInMap(entry->key);
+                delete entry;
+                return value;
+            }
+            // remove internal node(between head and tail)
+            else
+            {
+                entry->prev->next = entry->next;
+                entry->next->prev = entry->prev;
+                entry->prev = 0;
+                entry->next = 0;
+
+                V value = entry->value;
+                if (deleteKeyInMap != 0)
+                    deleteKeyInMap(entry->key);
+                delete entry;
+                return value;
+            }
+            count -= 1;
         }
-        Entry *nextEntry = entry->next;
-        Entry *prevEntry = entry->prev;
-        prevEntry->next = nextEntry;
-        if(nextEntry!=NULL)
-            nextEntry->prev = prevEntry;
-        delete entry;
+        entry = entry->next;
     }
-    return returnVal;
+    //IF key: not found
+    stringstream os;
+    os << "key (" << entry->key << ") is not found";
+    throw KeyNotFound(os.str());
 }
 
 template <class K, class V>
 bool XHashMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*deleteValueInMap)(V))
 {
     //YOUR CODE HERE
-    int index = (*hashCode)(key, this->capacity);
-    if (table[index] == NULL)
-    {
-        //IF key: not found
-        return false;
-    }
+    int index = hashCode(key, capacity);
     Entry *entry = table[index];
-    if (entry->next == NULL)
+    while (entry != 0)
     {
-        if (deleteKeyInMap != NULL)
-            deleteKeyInMap(entry->key);
-        if (deleteValueInMap != NULL)
-            deleteValueInMap(entry->value);
-        table[index] = NULL;
-        count--;
-        delete entry;
-        return true;
-    }
-    else
-    {
-        while (entry != NULL)
+        if (keyEQ(entry->key, key) && valueEQ(entry->value, value))
         {
-            if (keyEQ(entry->key, key))
+
+            //remove head
+            if (entry->prev == 0)
             {
-                if (deleteKeyInMap != NULL)
+                Entry *newHead = entry->next;
+                if (newHead != 0)
+                    newHead->prev = 0;
+                table[index] = newHead;
+                entry->next = 0;
+
+                if (deleteKeyInMap != 0)
                     deleteKeyInMap(entry->key);
-                if (deleteValueInMap != NULL)
+                if (deleteValueInMap != 0)
                     deleteValueInMap(entry->value);
-                break;
+                delete entry;
+                return true;
             }
-            entry = entry->next;
+            //remove tail
+            else if (entry->next == 0)
+            {
+                Entry *prev = entry->prev;
+                prev->next = 0;
+                entry->prev = 0;
+
+                if (deleteKeyInMap != 0)
+                    deleteKeyInMap(entry->key);
+                if (deleteValueInMap != 0)
+                    deleteValueInMap(entry->value);
+                delete entry;
+                return true;
+            }
+            // remove internal node(between head and tail)
+            else
+            {
+                entry->prev->next = entry->next;
+                entry->next->prev = entry->prev;
+                entry->prev = 0;
+                entry->next = 0;
+
+                if (deleteKeyInMap != 0)
+                    deleteKeyInMap(entry->key);
+                if (deleteValueInMap != 0)
+                    deleteValueInMap(entry->value);
+                delete entry;
+                return true;
+            }
+            count -= 1;
         }
-        Entry *nextEntry = entry->next;
-        Entry *prevEntry = entry->prev;
-        prevEntry->next = nextEntry;
-        if(nextEntry!=NULL)
-            nextEntry->prev = prevEntry;
-        delete entry;
-        return true;
+        entry = entry->next;
     }
+    return false;
 }
 
 template <class K, class V>
@@ -410,14 +420,14 @@ bool XHashMap<K, V>::containsKey(K key)
 {
     //YOUR CODE HERE
     int index = this->hashCode(key, this->capacity); // generate the index from key;
-    Entry* targetEntry = table[index];               // get the correspond entry from index
+    Entry *targetEntry = table[index];               // get the correspond entry from index
     while (targetEntry != NULL)
     {
         if (keyEQ(targetEntry->key, key))
             return true;
         targetEntry = targetEntry->next;
     }
-        return false;
+    return false;
 }
 
 template <class K, class V>
@@ -668,4 +678,17 @@ void XHashMap<K, V>::copyMapFrom(const XHashMap<K, V> &map)
     }
 }
 
+template <class  K, class V>
+class Pair 
+{
+    public:
+        K key;
+        V value;
+    Pair(K first, V second)
+    {
+        this->key = first;
+        this->value = second;
+    }
+    ~Pair(){}
+};
 #endif /* XHASHMAP_H */

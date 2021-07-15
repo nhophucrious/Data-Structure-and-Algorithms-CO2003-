@@ -16,29 +16,37 @@
 
 #include "sorting/ISort.h"
 
-
-template<class T>
-class StraightSelectionSort: public ISort<T>{
-public:   
-    void sort(T array[], int size, int (*comparator)(T&,T&)){
+template <class T>
+class StraightSelectionSort : public ISort<T>
+{
+public:
+    void sort(T array[], int size, int (*comparator)(T &, T &))
+    {
         //YOUR CODE HERE
-        int i, j, min;
-        for(i = 0; i < size; i++)
+        int walker;
+        int current = 0;
+        int smallest;
+        while (current < size - 1)
         {
-            min = i;
-            for (j = i + 1; j < size;j++)
+            smallest = current;
+            walker = current + 1;
+            while (walker < size)
             {
-                if((*comparator)(array[j],array[min]) == -1)
-                    min = j;
+                if (comparator(array[walker], array[smallest]) < 0)
+                {
+                    smallest = walker;
+                }
+                walker = walker + 1;
             }
-            T temp = array[min];
-            array[min] = array[i];
-            array[i] = temp;
+            if (smallest != current)
+            {
+                T temp = array[current];
+                array[current] = array[smallest];
+                array[smallest] = temp;
+            }
+            current = current + 1;
         }
     }
 };
 
-
-
-#endif /* STRAIGHTSELECTIONSORT_H */
-
+#endif 

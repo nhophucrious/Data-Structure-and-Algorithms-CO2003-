@@ -240,7 +240,7 @@ public:
             this->outDegree_ = this->inDegree_ = 0;
         }
         T& getVertex(){
-            return vertex;
+            return vertex; //TODO: /
         }
         void connect(VertexNode* to, float weight=0){
             Edge* edge = getEdge(to);

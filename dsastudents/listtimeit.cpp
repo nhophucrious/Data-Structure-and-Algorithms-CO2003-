@@ -8,6 +8,15 @@ using namespace std::chrono;
 #include "list/SLinkedList.h"
 #include "list/DLinkedList.h"
 #include "list/IList.h"
+#include "sorting/ISort.h"
+#include "sorting/BubbleSort.h"
+#include "sorting/StraightInsertionSort.h"
+#include "sorting/StraightSelectionSort.h"
+#include "sorting/ShellSort.h"
+#include "sorting/QuickSort.h"
+#include "sorting/DLinkedListSE.h"
+#include "sorting/SLinkedListSE.h"
+#include "sorting/HeapSort.h"
 #include "util/ArrayLib.h"
 #include <algorithm>
 
@@ -16,305 +25,320 @@ NOTE:
   * SHOULD define other functions to support the implementation of "meter"
   * Parameters: read the explanation presented above
 */
-
-int randomNumber(int size)
-{
-    int lower = 0;
-    int upper = size - 1;
-    srand(time(NULL));
-    int number = (rand() % (upper - lower) + lower);
-    return number;
-}
-
-double addRand(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
+double ArraySort(ISort<int> *psort, int *ptr_sizes, int size, int nexec = 10)
 {
     duration<double> diff;
-    // Fullfill a list
-    for (int i = 0; i < ptr_sizes[size]; i++)
+    int *random;
+    for (int i = 0; i < nexec; i++)
     {
-        plist->add(1);
+        random = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
+        auto start = high_resolution_clock ::now();                                     //start counting time;
+        psort->sort(random, ptr_sizes[size], &SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();                                       //end counting time
+        diff += chrono::duration<double, milli>(end - start);                           //store and increase the differece
+        delete[] random;                                                                // return the size before adding
     }
-    // loop for calculating the time
-    for (int j = 0; j < nexec; j++)
-    {
-        for (int k = 0; k < ntries; k++)
-        {
-            int K = randomNumber(ptr_sizes[size]);
-            auto start = high_resolution_clock ::now();           //start counting time;
-            plist->add(K, 1);                                     // Do addfirst operation
-            auto end = high_resolution_clock ::now();             //end counting time
-            diff += chrono::duration<double, milli>(end - start); //store and increase the differece
-            plist->removeAt(0);                                   // return the size before adding
-        }
-    }
-    plist->clear(); // prepare to make a new list
-    diff /= (nexec * ntries);
-    return diff.count();
-}
-double addFirst(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
-{
-    duration<double> diff;
-    // Fullfill a list
-    for (int i = 0; i < ptr_sizes[size]; i++)
-    {
-        plist->add(1);
-    }
-
-    // loop for calculating the time
-    for (int j = 0; j < nexec; j++)
-    {
-        auto start = high_resolution_clock ::now(); //start counting time;
-        plist->add(0, 1);                           // Do addfirst operation;
-        auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
-        plist->removeAt(0); //remove the size before
-    }
-    plist->clear(); // prepare to make a new list
     diff /= (nexec);
     return diff.count();
 }
-double addLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
+double SLListSort(SLinkedListSE<int> *pList, int *ptr_sizes, int size, int nexec = 10)
 {
+    pList->clear();
+    int *genList = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
     duration<double> diff;
-    // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
-        plist->add(1);
+        pList->add(genList[i]);
     }
-
-    for (int j = 0; j < nexec; j++)
+    for (int i = 0; i < nexec; i++)
     {
-        auto start = high_resolution_clock ::now(); //start counting time;
-        plist->add(1);                              // Do addfirst operation
-        auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
-        plist->removeAt(0); //remove the size before
+        auto start = high_resolution_clock ::now();            //start counting time;
+        pList->sort(&SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();              //end counting time
+        diff += chrono::duration<double, milli>(end - start);  //store and increase the differece                                  // return the size before adding
     }
-    plist->clear(); // prepare to make a new list
+    pList->clear();
+    delete[] genList;
     diff /= (nexec);
     return diff.count();
 }
-double removeFirstPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
+double DLListSort(DLinkedListSE<int> *pList, int *ptr_sizes, int size, int nexec = 10)
 {
+    pList->clear();
+    int *genList = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
     duration<double> diff;
-    // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
-        plist->add(1);
+        pList->add(genList[i]);
     }
-
-    // loop for calculating the time
-    for (int j = 0; j < nexec; j++)
+    for (int i = 0; i < nexec; i++)
     {
-        auto start = high_resolution_clock ::now(); //start counting time;
-        plist->removeAt(0);                         // Do addfirst operation
-        auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
-        plist->add(1);
+        auto start = high_resolution_clock ::now();            //start counting time;
+        pList->sort(&SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();              //end counting time
+        diff += chrono::duration<double, milli>(end - start);  //store and increase the differece                                  // return the size before adding
     }
-    plist->clear(); // prepare to make a new list
+    pList->clear();
+    delete[] genList;
     diff /= (nexec);
     return diff.count();
 }
-double removeLastPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
+double ArraySortWorst(ISort<int> *psort, int *ptr_sizes, int size, int nexec = 10)
 {
     duration<double> diff;
-    // Fullfill a list
-    for (int i = 0; i < ptr_sizes[size]; i++)
+    int *random;
+    for (int i = 0; i < nexec; i++)
     {
-        plist->add(1);
+        random = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
+        psort->sort(random, ptr_sizes[size], &SortSimpleOrder<int>::compare4Desending);
+        auto start = high_resolution_clock ::now();                                     //start counting time;
+        psort->sort(random, ptr_sizes[size], &SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();                                       //end counting time
+        diff += chrono::duration<double, milli>(end - start);                           //store and increase the differece
+        delete[] random;                                                                // return the size before adding
     }
-
-    // loop for calculating the time
-    for (int j = 0; j < nexec; j++)
-    {
-        auto start = high_resolution_clock ::now(); //start counting time;
-        plist->removeAt(plist->size() - 1);         // Do addfirst operation
-        auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
-        plist->add(1);
-    }
-    plist->clear();
     diff /= (nexec);
     return diff.count();
 }
-double removeRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
+double ArraySortBest(ISort<int> *psort, int *ptr_sizes, int size, int nexec = 10)
 {
     duration<double> diff;
-    // Fullfill a list
-    for (int i = 0; i < ptr_sizes[size]; i++)
+    int *random;
+    for (int i = 0; i < nexec; i++)
     {
-        plist->add(1);
+        random = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
+        psort->sort(random, ptr_sizes[size], &SortSimpleOrder<int>::compare4Ascending);
+        auto start = high_resolution_clock ::now();                                     //start counting time;
+        psort->sort(random, ptr_sizes[size], &SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();                                       //end counting time
+        diff += chrono::duration<double, milli>(end - start);                           //store and increase the differece
+        delete[] random;                                                                // return the size before adding
     }
-    // loop for calculating the time
-    for (int j = 0; j < nexec; j++)
-    {
-        for (int k = 0; k < ntries; k++)
-        {
-            int K = randomNumber(ptr_sizes[size]);
-            auto start = high_resolution_clock ::now();           //start counting time;
-            plist->removeAt(K);                                   // Do addfirst operation
-            auto end = high_resolution_clock ::now();             //end counting time
-            diff += chrono::duration<double, milli>(end - start); //store and increase the differece
-            plist->add(1);                                        //restore the before size
-        }
-    }
-    plist->clear(); // prepare to make a new list
-    diff /= (nexec * ntries);
-    return diff.count();
-}
-double getRandPos(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
-{
-    duration<double> diff;
-    // Fullfill a list
-    for (int i = 0; i < ptr_sizes[size]; i++)
-    {
-        plist->add(1);
-    }
-    // loop for calculating the time
-    for (int j = 0; j < nexec; j++)
-    {
-        for (int k = 0; k < ntries; k++)
-        {
-            int K = randomNumber(ptr_sizes[size]);
-            auto start = high_resolution_clock ::now();           //start counting time;
-            plist->get(K);                                        // Do addfirst operation
-            auto end = high_resolution_clock ::now();             //end counting time
-            diff += chrono::duration<double, milli>(end - start); //store and increase the differece                                        //restore the before size
-        }
-    }
-    plist->clear(); // prepare to make a new list
-    diff /= (nexec * ntries);
-    return diff.count();
-}
-double getFirst(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
-{
-    duration<double> diff;
-    // Fullfill a list
-    for (int i = 0; i < ptr_sizes[size]; i++)
-    {
-        plist->add(1);
-    }
-
-    // loop for calculating the time
-    for (int j = 0; j < nexec; j++)
-    {
-        auto start = high_resolution_clock ::now(); //start counting time;
-        plist->get(0);                           // Do addfirst operation;
-        auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double,milli>(end - start);
-    }
-    plist->clear(); // prepare to make a new list
     diff /= (nexec);
     return diff.count();
 }
-double getLast(IList<int> *plist, string csvfile, int *ptr_sizes, int size, int nexec = 10, int ntries = 10)
+double DLListSortWorst(DLinkedListSE<int> *pList, int *ptr_sizes, int size, int nexec = 10)
 {
+    pList->clear();
+    int *genList = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
     duration<double> diff;
-    // Fullfill a list
     for (int i = 0; i < ptr_sizes[size]; i++)
     {
-        plist->add(1);
+        pList->add(genList[i]);
     }
-
-    // loop for calculating the time
-    for (int j = 0; j < nexec; j++)
+    pList->sort(&SortSimpleOrder<int>::compare4Desending);
+    for (int i = 0; i < nexec; i++)
     {
-        auto start = high_resolution_clock ::now(); //start counting time;
-        plist->get(plist->size()-1);                           // Do addfirst operation;
-        auto end = high_resolution_clock ::now();   //end counting time
-        diff += chrono::duration<double, milli>(end - start);
+        auto start = high_resolution_clock ::now();            //start counting time;
+        pList->sort(&SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();              //end counting time
+        diff += chrono::duration<double, milli>(end - start);  //store and increase the differece                                  // return the size before adding
     }
-    plist->clear(); // prepare to make a new list
+    pList->clear();
+    delete[] genList;
+    diff /= (nexec);
+    return diff.count();
+}
+double SLListSortWorst(SLinkedListSE<int> *pList, int *ptr_sizes, int size, int nexec = 10)
+{
+    pList->clear();
+    int *genList = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
+    duration<double> diff;
+    for (int i = 0; i < ptr_sizes[size]; i++)
+    {
+        pList->add(genList[i]);
+    }
+    pList->sort(&SortSimpleOrder<int>::compare4Desending);
+    for (int i = 0; i < nexec; i++)
+    {
+        auto start = high_resolution_clock ::now();            //start counting time;
+        pList->sort(&SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();              //end counting time
+        diff += chrono::duration<double, milli>(end - start);  //store and increase the differece                                  // return the size before adding
+    }
+    delete[] genList;
+    pList->clear();
+    diff /= (nexec);
+    return diff.count();
+}
+double SLListSortBest(SLinkedListSE<int> *pList, int *ptr_sizes, int size, int nexec = 10)
+{
+    pList->clear();
+    int *genList = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
+    duration<double> diff;
+    for (int i = 0; i < ptr_sizes[size]; i++)
+    {
+        pList->add(genList[i]);
+    }
+    pList->sort(&SortSimpleOrder<int>::compare4Ascending);
+    for (int i = 0; i < nexec; i++)
+    {
+        auto start = high_resolution_clock ::now();            //start counting time;
+        pList->sort(&SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();              //end counting time
+        diff += chrono::duration<double, milli>(end - start);  //store and increase the differece                                  // return the size before adding
+    }
+    delete[] genList;
+    pList->clear();
+    diff /= (nexec);
+    return diff.count();
+}
+double DLListSortBest(DLinkedListSE<int> *pList, int *ptr_sizes, int size, int nexec = 10)
+{
+    pList->clear();
+    int *genList = genIntArray(ptr_sizes[size], 0, ptr_sizes[size] - 1);
+    duration<double> diff;
+    for (int i = 0; i < ptr_sizes[size]; i++)
+    {
+        pList->add(genList[i]);
+    }
+    pList->sort(&SortSimpleOrder<int>::compare4Ascending);
+    for (int i = 0; i < nexec; i++)
+    {
+        auto start = high_resolution_clock ::now();            //start counting time;
+        pList->sort(&SortSimpleOrder<int>::compare4Ascending); // Do addfirst operation
+        auto end = high_resolution_clock ::now();              //end counting time
+        diff += chrono::duration<double, milli>(end - start);  //store and increase the differece                                  // return the size before adding
+    }
+    pList->clear();
+    delete[] genList;
     diff /= (nexec);
     return diff.count();
 }
 
-void meter(IList<int> *alist, IList<int> *slist, IList<int> *dlist, string csvfile, int *ptr_sizes, int nsizes, int nexec = 10, int ntries = 10)
+void meter(ISort<int> *bubble, ISort<int> *selection, ISort<int> *insertion,
+           ISort<int> *shell, ISort<int> *heap, ISort<int> *quick, DLinkedListSE<int> *DSE,
+           SLinkedListSE<int> *SSE,
+           string csvfile, int *ptr_sizes, int nsizes, int nexec = 10)
 {
-    //YOUR CODE HERE
+    // cout << "\t\t\t\t\t\t\t\tA part of data sample:" << endl;
+    // cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+    cout << "index/nsizes:\t" << setw(6) << 'n' << "\t->" << setw(14) << "BubbleSort"
+         << setw(14) << "InsertionSort" << setw(14) << "SelectionSort" << setw(14) << "ShellSort"
+         << setw(14) << "HeapSort" << setw(14) << "QuickSort" << setw(14) << "S_MergeSort" << setw(14) << "D_MergeSort" << '\n';
 
-    cout << "\t\t\t\t\t\t\t\tA part of data sample:" << endl;
-    cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
-    cout << "index/nsizes:\t" << setw(6) << 'n' << "\t->" << setw(14) << "A_add(0,*)," << setw(14) << "A_add()," << setw(14) << "A_add(k,)," << setw(14) << "A_removeAt(0)," << setw(15) << "A_removeAt(n-1)," << setw(14) << "A_removeAt(k)," << setw(13) << "A_get(0)," << setw(13) << "A_get(n-1)," << setw(13) << "A_get(k)," << '\n';
-    cout << setw(14) << "S_add(0,*)," << setw(14) << "S_add()," << setw(14) << "S_add(k,)," << setw(14) << "s_removeAt(0)," << setw(15) << "S_removeAt(n-1)," << setw(14) << "S_removeAt(k)," << setw(13) << "S_get(0)," <<setw(13) << "S_get(n-1)," <<setw(13) <<"S_get(k)," ;
-    cout << setw(14) << "D_add(0,*)," << setw(14) << "D_add()," << setw(14) << "D_add(k,)," << setw(14) << "D_removeAt(0)," << setw(15) << "D_removeAt(n-1)," << setw(14) << "D_removeAt(k)," << setw(13) << "D_get(0)," <<setw(13) << "D_get(n-1)," <<setw(13) <<"D_get(k)," << '\n' ;
     std::ofstream myfile;
     myfile.open(csvfile);
-    myfile << "A_size,A_addfirst(ms),A_addlast(ms),A_addrandpos(ms),A_removefirst(ms),A_removelast(ms),A_removerandpos(ms),A_getfirst(ms),A_getrandpos(ms),A_getlast(ms),";
-    myfile << "S_addfirst(ms),S_addlast(ms),S_addrandpos(ms),S_removefirst(ms),S_removelast(ms),S_removerandpos(ms),S_getfirst(ms),S_getlast(ms),S_getrandpos(ms),";
-    myfile << "D_addfirst(ms),D_addlast(ms),D_addrandpos(ms),D_removefirst(ms),D_removelast(ms),D_removerandpos(ms),D_getfirst(ms),D_getlast(ms),D_getrandpos(ms),\n";
+    myfile << "Size,Bubble,Insertion,Selection,Shell,Heap,Quick,S_MergeSort,D_MergeSort\n";
     for (int i = 0; i < nsizes; i++)
     {
-    string A_af = to_string(addFirst(alist, csvfile, ptr_sizes, i, nexec, ntries));
-    string A_al = to_string(addLastPos(alist, csvfile, ptr_sizes, i, nexec, ntries));
-    string A_arp = to_string(addRand(alist, csvfile, ptr_sizes, i, nexec, ntries));
-    string A_rf = to_string(removeFirstPos(alist, csvfile, ptr_sizes, i, nexec, ntries));
-    string A_rl = to_string(removeLastPos(alist, csvfile, ptr_sizes, i, nexec, ntries));
-    string A_rrp = to_string(removeRandPos(alist, csvfile, ptr_sizes, i, nexec, ntries));
-    string A_gf = to_string(getFirst(alist, csvfile, ptr_sizes, i, nexec, ntries));
-    string A_gl = to_string(getLast(alist, csvfile, ptr_sizes, i, nexec, ntries));
-    string A_grp = to_string(getRandPos(alist, csvfile, ptr_sizes, i, nexec, ntries));
-
-    string S_af = to_string(addFirst(slist, csvfile, ptr_sizes, i, nexec, ntries));
-    string S_al = to_string(addLastPos(slist, csvfile, ptr_sizes, i, nexec, ntries));
-    string S_arp = to_string(addRand(slist, csvfile, ptr_sizes, i, nexec, ntries));
-    string S_rf = to_string(removeFirstPos(slist, csvfile, ptr_sizes, i, nexec, ntries));
-    string S_rl = to_string(removeLastPos(slist, csvfile, ptr_sizes, i, nexec, ntries));
-    string S_rrp = to_string(removeRandPos(slist, csvfile, ptr_sizes, i, nexec, ntries));
-    string S_gf = to_string(getFirst(slist, csvfile, ptr_sizes, i, nexec, ntries));
-    string S_gl = to_string(getLast(slist, csvfile, ptr_sizes, i, nexec, ntries));
-    string S_grp = to_string(getRandPos(slist, csvfile, ptr_sizes, i, nexec, ntries));
-
-    string D_af = to_string(addFirst(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-    string D_al = to_string(addLastPos(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-    string D_arp = to_string(addRand(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-    string D_rf = to_string(removeFirstPos(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-    string D_rl = to_string(removeLastPos(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-    string D_rrp = to_string(removeRandPos(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-    string D_gf = to_string(getFirst(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-    string D_gl = to_string(getLast(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-    string D_grp = to_string(getRandPos(dlist, csvfile, ptr_sizes, i, nexec, ntries));
-
-    if (!(i % 10))
-            cout << '[' << setw(2) << i << "/100]:\t" << setw(6) << ptr_sizes[i] << "\t->";
+        string bb = to_string(ArraySort(bubble, ptr_sizes, i, nexec));
+        string isort = to_string(ArraySort(insertion, ptr_sizes, i, nexec));
+        string ssort = to_string(ArraySort(selection, ptr_sizes, i, nexec));
+        string shells = to_string(ArraySort(shell, ptr_sizes, i, nexec));
+        string heaps = to_string(ArraySort(heap, ptr_sizes, i, nexec));
+        string quicks = to_string(ArraySort(quick, ptr_sizes, i, nexec));
+        string DList = to_string(DLListSort(DSE, ptr_sizes, i, nexec));
+        string SList = to_string(SLListSort(SSE, ptr_sizes, i, nexec));
+        if (!(i % 10))
+            cout
+                << '[' << setw(2) << i << "/100]:\t" << setw(6) << ptr_sizes[i] << "\t->";
         if (!(i % 10))
         {
-            cout << fixed << setw(13) << setprecision(8) << A_af << ',';
-            cout << fixed << setw(13) << setprecision(8) << A_al << ',';
-            cout << fixed << setw(13) << setprecision(8) << A_arp << ',';
-            cout << fixed << setw(13) << setprecision(8) << A_rf << ',';
-            cout << fixed << setw(13) << setprecision(8) << A_rl << ',';
-            cout << fixed << setw(13) << setprecision(8) << A_rrp << ',';
-            cout << fixed << setw(13) << setprecision(8) << A_gf << ',';
-            cout << fixed << setw(13) << setprecision(8) << A_gl << ',';
-            cout << fixed << setw(13) << setprecision(8) << A_grp << ',';
-
-            cout << fixed << setw(13) << setprecision(8) << S_af << ',';
-            cout << fixed << setw(13) << setprecision(8) << S_al << ',';
-            cout << fixed << setw(13) << setprecision(8) << S_arp << ',';
-            cout << fixed << setw(13) << setprecision(8) << S_rf << ',';
-            cout << fixed << setw(13) << setprecision(8) << S_rl << ',';
-            cout << fixed << setw(13) << setprecision(8) << S_rrp << ',';
-            cout << fixed << setw(13) << setprecision(8) << S_gf << ',';
-            cout << fixed << setw(13) << setprecision(8) << S_gl << ',';
-            cout << fixed << setw(13) << setprecision(8) << S_grp << ',';
-
-            cout << fixed << setw(13) << setprecision(8) << D_af << ',';
-            cout << fixed << setw(13) << setprecision(8) << D_al << ',';
-            cout << fixed << setw(13) << setprecision(8) << D_arp << ',';
-            cout << fixed << setw(13) << setprecision(8) << D_rf << ',';
-            cout << fixed << setw(13) << setprecision(8) << D_rl << ',';
-            cout << fixed << setw(13) << setprecision(8) << D_rrp << ',';
-            cout << fixed << setw(13) << setprecision(8) << D_gf << ',';
-            cout << fixed << setw(13) << setprecision(8) << D_gl << ',';
-            cout << fixed << setw(13) << setprecision(8) << D_grp << ',';
-            
+            cout << fixed << setw(13) << setprecision(8) << bb << ',';
+            cout << fixed << setw(13) << setprecision(8) << isort << ',';
+            cout << fixed << setw(13) << setprecision(8) << ssort << ',';
+            cout << fixed << setw(13) << setprecision(8) << shells << ',';
+            cout << fixed << setw(13) << setprecision(8) << heaps << ',';
+            cout << fixed << setw(13) << setprecision(8) << quicks << ',';
+            cout << fixed << setw(13) << setprecision(8) << DList << ',';
+            cout << fixed << setw(13) << setprecision(8) << SList << ',';
             cout << endl;
         }
-    myfile << to_string(ptr_sizes[i]) << "," << A_af << "," << A_al << "," << A_arp << "," << A_rf << "," << A_rl << "," << A_rrp << "," << A_gf << "," << A_gl << "," << A_grp << ",";
-    myfile << S_af << "," << S_al << "," << S_arp << "," << S_rf << "," << S_rl << "," << S_rrp << "," << S_gf << "," << S_gl << "," << S_grp << ",";
-    myfile << D_af << "," << D_al << "," << D_arp << "," << D_rf << "," << D_rl << "," << D_rrp << "," << D_gf << "," << D_gl << "," << D_grp << "," << '\n';
+        myfile << to_string(ptr_sizes[i]) << "," << bb << "," << isort << "," << ssort << "," << shells << ","
+               << heaps << "," << quicks << "," << SList << "," << DList << '\n';
+    }
+    myfile.close();
+    cout << "\t\t\t\t\t\t Printing the values into CSV files..." << endl;
+}
+
+void meterWorst(ISort<int> *bubble, ISort<int> *selection, ISort<int> *insertion,
+                ISort<int> *shell, ISort<int> *heap, ISort<int> *quick, DLinkedListSE<int> *DSE,
+                SLinkedListSE<int> *SSE,
+                string csvfile, int *ptr_sizes, int nsizes, int nexec = 10)
+{
+    // cout << "\t\t\t\t\t\t\t\tA part of data sample WORST CASE:" << endl;
+    // cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+    cout << "index/nsizes:\t" << setw(6) << 'n' << "\t->" << setw(14) << "BubbleSort"
+         << setw(14) << "InsertionSort" << setw(14) << "SelectionSort" << setw(14) << "ShellSort"
+         << setw(14) << "HeapSort" << setw(14) << "QuickSort" << setw(14) << "S_MergeSort" << setw(14) << "D_MergeSort" << '\n';
+
+    std::ofstream myfile;
+    myfile.open(csvfile);
+    myfile << "Size,Bubble,Insertion,Selection,Shell,Heap,Quick,S_MergeSort,D_MergeSort\n";
+    for (int i = 0; i < nsizes; i++)
+    {
+        string bb = to_string(ArraySortWorst(bubble, ptr_sizes, i, nexec));
+        string isort = to_string(ArraySortWorst(insertion, ptr_sizes, i, nexec));
+        string ssort = to_string(ArraySortWorst(selection, ptr_sizes, i, nexec));
+        string shells = to_string(ArraySortWorst(shell, ptr_sizes, i, nexec));
+        string heaps = to_string(ArraySortWorst(heap, ptr_sizes, i, nexec));
+        string quicks = to_string(ArraySortWorst(quick, ptr_sizes, i, nexec));
+        string DList = to_string(DLListSortWorst(DSE, ptr_sizes, i, nexec));
+        string SList = to_string(SLListSortWorst(SSE, ptr_sizes, i, nexec));
+        if (!(i % 10))
+            cout
+                << '[' << setw(2) << i << "/100]:\t" << setw(6) << ptr_sizes[i] << "\t->";
+        if (!(i % 10))
+        {
+            cout << fixed << setw(13) << setprecision(8) << bb << ',';
+            cout << fixed << setw(13) << setprecision(8) << isort << ',';
+            cout << fixed << setw(13) << setprecision(8) << ssort << ',';
+            cout << fixed << setw(13) << setprecision(8) << shells << ',';
+            cout << fixed << setw(13) << setprecision(8) << heaps << ',';
+            cout << fixed << setw(13) << setprecision(8) << quicks << ',';
+            cout << fixed << setw(13) << setprecision(8) << DList << ',';
+            cout << fixed << setw(13) << setprecision(8) << SList << ',';
+            cout << endl;
+        }
+        myfile << to_string(ptr_sizes[i]) << "," << bb << "," << isort << "," << ssort << "," << shells << ","
+               << heaps << "," << quicks << "," << SList << "," << DList << '\n';
+    }
+    myfile.close();
+    cout << "\t\t\t\t\t\t Printing the values into CSV files..." << endl;
+}
+
+void meterBest(ISort<int> *bubble, ISort<int> *selection, ISort<int> *insertion,
+               ISort<int> *shell, ISort<int> *heap, ISort<int> *quick, DLinkedListSE<int> *DSE,
+               SLinkedListSE<int> *SSE,
+               string csvfile, int *ptr_sizes, int nsizes, int nexec = 10)
+{
+    // cout << "\t\t\t\t\t\t\t\tA part of data sample WORST CASE:" << endl;
+    // cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+    cout << "index/nsizes:\t" << setw(6) << 'n' << "\t->" << setw(14) << "BubbleSort"
+         << setw(14) << "InsertionSort" << setw(14) << "SelectionSort" << setw(14) << "ShellSort"
+         << setw(14) << "HeapSort" << setw(14) << "QuickSort" << setw(14) << "S_MergeSort" << setw(14) << "D_MergeSort" << '\n';
+
+    std::ofstream myfile;
+    myfile.open(csvfile);
+    myfile << "Size,Bubble,Insertion,Selection,Shell,Heap,Quick,S_MergeSort,D_MergeSort\n";
+    for (int i = 0; i < nsizes; i++)
+    {
+        string bb = to_string(ArraySortBest(bubble, ptr_sizes, i, nexec));
+        string isort = to_string(ArraySortBest(insertion, ptr_sizes, i, nexec));
+        string ssort = to_string(ArraySortBest(selection, ptr_sizes, i, nexec));
+        string shells = to_string(ArraySortBest(shell, ptr_sizes, i, nexec));
+        string heaps = to_string(ArraySortBest(heap, ptr_sizes, i, nexec));
+        string quicks = to_string(ArraySortBest(quick, ptr_sizes, i, nexec));
+        string DList = to_string(DLListSortBest(DSE, ptr_sizes, i, nexec));
+        string SList = to_string(SLListSortBest(SSE, ptr_sizes, i, nexec));
+        if (!(i % 10))
+            cout
+                << '[' << setw(2) << i << "/100]:\t" << setw(6) << ptr_sizes[i] << "\t->";
+        if (!(i % 10))
+        {
+            cout << fixed << setw(13) << setprecision(8) << bb << ',';
+            cout << fixed << setw(13) << setprecision(8) << isort << ',';
+            cout << fixed << setw(13) << setprecision(8) << ssort << ',';
+            cout << fixed << setw(13) << setprecision(8) << shells << ',';
+            cout << fixed << setw(13) << setprecision(8) << heaps << ',';
+            cout << fixed << setw(13) << setprecision(8) << quicks << ',';
+            cout << fixed << setw(13) << setprecision(8) << DList << ',';
+            cout << fixed << setw(13) << setprecision(8) << SList << ',';
+            cout << endl;
+        }
+        myfile << to_string(ptr_sizes[i]) << "," << bb << "," << isort << "," << ssort << "," << shells << ","
+               << heaps << "," << quicks << "," << SList << "," << DList << '\n';
     }
     myfile.close();
     cout << "\t\t\t\t\t\t Printing the values into CSV files..." << endl;
@@ -332,18 +356,62 @@ int get_int(char **begin, char **end, const string &option, int _default)
         return _default;
 }
 
+string get_string(char **begin, char **end, const string &option, string _default)
+{
+    char **ptr = std::find(begin, end, option);
+    if (ptr != end && ++ptr != end)
+        return string(*ptr);
+    else
+        return _default;
+}
+bool option_exist(char **begin, char **end, const string &option)
+{
+    return std::find(begin, end, option) != end;
+}
+
 int main(int argc, char **argv)
 {
     int nsizes, nexec, max_length, ntries;
-    XArrayList<int> alist;
-    SLinkedList<int> slist;
-    DLinkedList<int> dlist;
 
-    nsizes = get_int(argv, argv + argc, "-nsizes", 50);
-    nexec = get_int(argv, argv + argc, "-nexec", 20);
-    max_length = get_int(argv, argv + argc, "-max_length", 1000);
-    ntries = get_int(argv, argv + argc, "-ntries", 10);
+    nsizes = get_int(argv, argv + argc, "-nsizes", 50);          //200
+    nexec = get_int(argv, argv + argc, "-nexec", 20);            //200
+    max_length = get_int(argv, argv + argc, "-max_length", 100); //10000
+    // ntries = get_int(argv, argv + argc, "-ntries", 10);
     int *ptr_sizes = genIntArray(nsizes, 1, max_length);
-    meter(&alist, &slist, &dlist, "allTime.csv", ptr_sizes, nsizes, nexec, ntries);
+    BubbleSort<int> bubble;
+    StraightInsertionSort<int> insertion;
+    StraightSelectionSort<int> selection;
+    int num_segments[] = {1, 3, 7, 9, 11, 13, 15, 17, 19, 21};
+    ShellSort<int> shell(num_segments, 10);
+    HeapSort<int> heap;
+    QuickSort<int> quick;
+    SLinkedListSE<int> SList;
+    DLinkedListSE<int> DList;
 
+    if (option_exist(argv, argv + argc, "-n"))
+    {
+        cout << endl;
+        cout << "Normal Case: Time measurement" << endl;
+        cout << string(80, '-') << endl;
+
+        string filename = get_string(argv, argv + argc, "-n", "");
+        meter(&bubble, &selection, &insertion, &shell, &heap, &quick, &DList, &SList, filename, ptr_sizes, nsizes, nexec);
+    }
+    if (option_exist(argv, argv + argc, "-w"))
+    {
+        cout << endl;
+        cout << "Worst Case: Time measurement" << endl;
+        cout << string(80, '-') << endl;
+
+        string filename = get_string(argv, argv + argc, "-w", "");
+        meterWorst(&bubble, &selection, &insertion, &shell, &heap, &quick, &DList, &SList, filename, ptr_sizes, nsizes, nexec);
+    }
+    if (option_exist(argv, argv + argc, "-b"))
+    {
+        cout << endl;
+        cout << "Best Case: Time measurement" << endl;
+        cout << string(80, '-') << endl;
+        string filename = get_string(argv, argv + argc, "-b", "");
+        meterBest(&bubble, &selection, &insertion, &shell, &heap, &quick, &DList, &SList, filename, ptr_sizes, nsizes, nexec);
+    }
 }

@@ -15,25 +15,29 @@
 #define STRAIGHTINSERTIONSORT_H
 #include "sorting/ISort.h"
 
-template<class T>
-class StraightInsertionSort: public ISort<T>{
+template <class T>
+class StraightInsertionSort : public ISort<T>
+{
 public:
-    void sort(T array[], int size, int (*comparator)(T&,T&)){
-        int i, j;
-        T key;
-        for (i = 1; i < size;i++)
+    void sort(T array[], int size, int (*comparator)(T &, T &))
+    {
+        int current;
+        int walker;
+        T temp;
+        current = 1;
+        while (current < size)
         {
-            key = array[i];
-            j = i - 1;
-            while(j>=0 && (*comparator)(array[j],key) == 1)
+            temp = array[current];
+            walker = current - 1;
+            while ((walker >= 0) && comparator(temp, array[walker]) < 0)
             {
-                array[j + 1] = array[j];
-                j--;
+                array[walker + 1] = array[walker]; //shift to right
+                walker -= 1;
             }
-            array[j + 1] = key;
+            array[walker + 1] = temp;
+            current += 1;
         }
     }
 };
 
 #endif /* STRAIGHTINSERTIONSORT_H */
-

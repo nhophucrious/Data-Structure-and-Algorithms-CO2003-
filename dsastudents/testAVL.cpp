@@ -15,43 +15,24 @@ using namespace std;
 #include "sorting/ListSortDemo.h"
 #include "hash/XHashMapDemo.h"
 #include "hash/XHashMap.h"
+#include "sorting/ShellSortDemo.h"
+#include "sorting/XArrayListSE.h"
+#include<iostream>
+#include"hash/XHashMap.h"
+using namespace std;
+
 int main()
 {
-    simpleMap();
-    return 0;
-}
-
-vector<bool> check(size, false);
-vector<uint8> sym;
-vector<float> symfreq;
-for(int i = 0; i < size; i++)
-{
-    if(check[i] == true) continue;
-    int count = 1;
-    sym.push_back(data[i]);
-    for (int j = i + 1; j < n; j++)
-    {
-        if(data[j] == data[i])
-        {
-            check[j] = true;
-            count++;
-        }
-    }
-    symfreq.push_back(count);
-}
-
-vector<bool>met(sym.size(),false);
-int count = 0;
-while(count < sym.size())
-{
-    auto it = find(sym.begin(),sym.end(),min);
-    int index = it - sym.begin();
-    check[index] = true;
-    min = 999;
-    for (int i = 1; i < arr.size(); i++)
-    {
-        if(arr[i] < min && check[i] == false)
-            min = arr[i];
-    }
-    count++;
+    XHashMap<int, int> map(&XHashMap<int,int>::simpleHash);
+    cout << map.getCapacity() << endl;
+    Pair<int, int> pairs[] = {
+        Pair<int, int>(10, 20),
+        Pair<int, int>(20, 40),
+        Pair<int, int>(40, 80),
+        Pair<int, int>(50, 100),
+        Pair<int, int>(60, 120),
+        Pair<int, int>(70, 140)};
+    for(Pair<int, int> pair: pairs) map.put(pair.key, pair.value);
+    map.println();
+    // hashDemo1();
 }
