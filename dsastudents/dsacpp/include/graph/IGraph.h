@@ -21,8 +21,6 @@ using namespace std;
 #include "list/DLinkedList.h"
 
 
-
-
 class VertexNotFoundException: public std::exception{
 private:
     string vertex;
@@ -51,14 +49,35 @@ public:
     }
 };
 
+template <class T>
+class Edge
+{
+    public:
+        T from, to;
+        float weight;
+        Edge(T form, T to, float weight = 0)
+        {
+            this->from = from;
+            this->to = to;
+            this->weight = weight;
+        }
+        Edge(const Edge& edge)
+        {
+            this->from = edge.from;
+            this->to = edge.to;
+            this->weight = edge.weight;
+        }
+};
 
 /*
  * IGraph: define APIs for a graph data structure
  *  >> T: type of vertices
  */
-template<class T>
-class IGraph{
-public:   
+template <class T>
+class IGraph
+{
+public:
+    virtual ~IGraph(){};
     virtual void add(T vertex)=0;
     virtual void remove(T vertex)=0;
     virtual bool contains(T vertex)=0;
@@ -76,6 +95,9 @@ public:
     
     virtual int inDegree(T vertex)=0;
     virtual int outDegree(T vertex)=0;
+    
+    virtual DLinkedList<T> vertices()=0;
+    virtual bool connected(T from, T to)=0;
     
     virtual string toString()=0;
 };

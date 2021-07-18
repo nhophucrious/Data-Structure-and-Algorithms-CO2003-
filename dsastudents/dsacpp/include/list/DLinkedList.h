@@ -149,7 +149,7 @@ protected:
         else
             return itemEqual(lhs, rhs);
     }
-    void copyFrom(const DLinkedList<T> &list);
+
     void removeInternalData();
     Node *getPreviousNodeOf(int index);
 
@@ -157,6 +157,7 @@ protected:
     ////////////////////////  INNER CLASSES DEFNITION ////////////////////
     //////////////////////////////////////////////////////////////////////
 public:
+    void copyFrom(const DLinkedList<T> &list);
     class Node
     {
     public:
@@ -635,29 +636,24 @@ bool DLinkedList<T>::contains(T item)
 template <class T>
 string DLinkedList<T>::toString(string (*item2str)(T &))
 {
-    stringstream ss;
-    ss << "[";
+    if (this->count <= 0)
+        return "[]";
+
+    stringstream itemos;
     Node *ptr = head->next;
-    while (ptr != tail->prev)
+    while (ptr != tail)
     {
         if (item2str != 0)
-            ss << item2str(ptr->data) << ", ";
+            itemos << item2str(ptr->data) << ", ";
         else
-            ss << ptr->data << ", ";
+            itemos << ptr->data << ", ";
 
         ptr = ptr->next;
     }
-
-    if (count > 0)
-    {
-        if (item2str != 0)
-            ss << item2str(ptr->data) << "]";
-        else
-            ss << ptr->data << "]";
-    }
-    else
-        ss << "]";
-    return ss.str();
+    //remove the last ", "
+    string itemstr = itemos.str();
+    itemstr = itemstr.substr(0, itemstr.rfind(','));
+    return "[" + itemstr + "]";
 }
 
 template <class T>

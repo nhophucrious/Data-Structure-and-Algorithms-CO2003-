@@ -556,29 +556,21 @@ bool SLinkedList<T>::contains(T item)
 }
 
 template <class T>
-string SLinkedList<T>::toString(string (*item2str)(T &))
-{
-    stringstream ss;
-    ss << "[";
-    Node *ptr = head->next;
-    while (ptr != tail->next)
-    {
-        if (item2str != 0)
-            ss << item2str(ptr->data) << ", ";
-        else
-            ss << ptr->data << ",";
+string SLinkedList<T>::toString(string (*item2str)(T&) ){
+    if(this->count <= 0) return "[]";
+    
+    stringstream itemos;
+    Node* ptr = head->next;
+    while(ptr != tail){
+        if(item2str != 0) itemos << item2str(ptr->data) << ", ";
+        else itemos << ptr->data << ", ";
 
         ptr = ptr->next;
     }
-
-    if (count > 0)
-        if (item2str != 0)
-            ss << item2str(ptr->data) << "]";
-        else
-            ss << ptr->data << "]";
-    else
-        ss << "]";
-    return ss.str();
+    //remove the last ", "
+    string itemstr = itemos.str();
+    itemstr = itemstr.substr(0, itemstr.rfind(','));
+    return "[" + itemstr + "]";
 }
 
 #endif /* SLINKEDLIST_H */

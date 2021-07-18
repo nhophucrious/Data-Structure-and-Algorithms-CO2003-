@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include "util/Point.h"
+#include "geom/Point3D.h"
 #include "geom/Vector3D.h"
 
 using namespace std;
@@ -91,19 +91,20 @@ string toString(Node<int> *head)
     }
 }
 
-void print(Node<int>*&head)
+void print(Node<int>*head)
 {
     cout << toString(head);
 }
 void remove(Node<int> *&head)
 {
-    Node<int> *temp = NULL;
+    Node<int> *temp;
     while (head != NULL)
     {
         temp = head->next;
         delete head;
         head = temp;
     }
+    delete temp;
 }
 
 /*
@@ -145,7 +146,18 @@ void remove(Node<int> *&head)
  */
 void Triangle()
 {
+    Point3D A = Point3D(0, 0, 0);
+    Point3D B = Point3D(2, 0, 0);
+    Point3D C = Point3D(0, 2, 0);
 
+    cout << "The vertices of the triangle:" << endl;
+    A.println(); B.println(); C.println();
+
+    Vector3D AB = B - A;
+    Vector3D AC = C - A;
+    Vector3D cross = AB.cross(AC);
+    float sABC = 0.5 * cross.length();
+    cout << "sABC = " << fixed << setw(6) << setprecision(2) << sABC << endl;
 }
 int main(int argc, char **argv)
 {
@@ -155,5 +167,6 @@ int main(int argc, char **argv)
     remove(head);
     print(head);
     cout << endl;
+    // Triangle();
     return 0;
 }

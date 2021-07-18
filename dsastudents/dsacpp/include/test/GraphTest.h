@@ -16,7 +16,6 @@
 #include "doctest.h"
 #include "graph/DGraphModel.h"
 #include "graph/UGraphModel.h"
-#include "util/Point.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -181,85 +180,6 @@ TEST_CASE( "DGraphModel<char>:" ) {
 }
 
 //////////////////////////////////////////////////////////////////////
-/////////////  DGraphModel: Algorithm Test        ////////////////////
-//////////////////////////////////////////////////////////////////////
-
-TEST_CASE( "TopoSort with DGraphModel" ) {
-    int nv = 10, ne = 14;
-    char vertex[]   = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    char from[]     = {'0', '0', '1', '3', '3', '3', '3', '4', '6', '6', '6', '8', '8', '9'};
-    char to[]       = {'1', '5', '7', '2', '4', '7', '8', '8', '0', '1', '2', '2', '7', '4'};
-    char bfs_exp[]  = {'3', '6', '9', '0', '4', '1', '5', '8', '2', '7'};
-    char dfs_exp[]  = {'3', '6', '0', '5', '1', '9', '4', '8', '2', '7'};
-
-    DGraphModel<char> model(&charComparator, &vertex2str);
-    REQUIRE(model.size() == 0);
-    REQUIRE(model.empty() == true);
-    
-    for(int v=0; v < nv; v++) model.add(vertex[v]);
-    for(int e=0; e < ne; e++) model.connect(from[e], to[e]);
-    REQUIRE(model.size() == nv);
-    
-    TopoSorter<char> sorter(&model);
-    DLinkedList<char> bfs = sorter.sort(TopoSorter<char>::BFS);
-    DLinkedList<char>::Iterator it;
-    
-    int v= 0;
-    for(it = bfs.begin(); it != bfs.end(); it++){
-        REQUIRE(*it == bfs_exp[v++]);
-    }
-    
-    v = 0;
-    DLinkedList<char> dfs = sorter.sort(TopoSorter<char>::DFS);
-    for(it = dfs.begin(); it != dfs.end(); it++){
-        REQUIRE(*it == dfs_exp[v++]);
-    }
-}
-
-TEST_CASE( "Dijkstra with DGraphModel" ) {
-    int nv = 5, ne = 10;
-    char vertex[]   = {'0', '1', '2', '3', '4'};
-    char from[]     = {'0', '0', '0', '1', '1', '2', '2', '4', '4', '4'};
-    char to[]       = {'1', '2', '4', '2', '3', '1', '3', '1', '2', '3'};
-    float weight[]  = { 5,   3,   2,   2,   6,   1,   2,   6,   10,  4};
-    char path_exp[][5] = {
-        {'0'},  //1st path
-        {'0', '4'}, //2nd path
-        {'0', '2'},
-        {'0', '2', '1'},
-        {'0', '2', '3'}
-    };
-    int path_length[]= {1,  2,  2,  3,  3};
-    float path_cost[]= {0,  2,  3,  4,  5};
-    
-    
-    DGraphModel<char> model(&charComparator, &vertex2str);
-    REQUIRE(model.size() == 0);
-    REQUIRE(model.empty() == true);
-    for(int v=0; v < nv; v++) model.add(vertex[v]);
-    for(int e=0; e < ne; e++) model.connect(from[e], to[e], weight[e]);
-    REQUIRE(model.size() == nv);
-    
-    DGraphAlgorithm<char> finder;
-    DLinkedList<Path<char>*> list = finder.dijkstra(&model, '0');
-    int pathIdx = 0;
-    for(DLinkedList<Path<char>*>::Iterator it= list.begin(); it != list.end(); it++){
-        Path<char>* path = *it;
-        DLinkedList<char>& vertexList = path->getPath(); 
-        REQUIRE(path->getCost() == path_cost[pathIdx]);
-        REQUIRE(vertexList.size() == path_length[pathIdx]);
-        DLinkedList<char>::Iterator vit;
-        int vidx = 0;
-        for(vit = vertexList.begin(); vit != vertexList.end(); vit++){
-            char vn = *vit;
-            REQUIRE(vn == path_exp[pathIdx][vidx++]);
-        }
-        pathIdx++;
-    }
-
-}
-
-//////////////////////////////////////////////////////////////////////
 ////////////////////////  UGraphModel Test        ////////////////////
 //////////////////////////////////////////////////////////////////////
 
@@ -383,39 +303,6 @@ TEST_CASE( "UGraphModel<char>" ) {
     }   
 }
 
-//////////////////////////////////////////////////////////////////////
-/////////////  UGraphModel: Algorithm Test        ////////////////////
-//////////////////////////////////////////////////////////////////////
-
-TEST_CASE( "Minimum Spanning Tree with UGraphModel" ) {
-    UGraphModel<char> model(&charEQ, &char2str);
-    REQUIRE(model.size() == 0);
-    REQUIRE(model.empty() == true);
-    
-    int nv = 6;
-    int ne = 9;
-    char vertex[]       = {'A', 'B', 'C', 'D', 'E', 'F'};
-    
-    char from[]         = {'A',  'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E'};
-    char to[]           = {'B',  'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F'};
-    float weight[]      = { 6,    3,   2,   5,   3,   4,   2,   3,   5};
-    int indegree[]      = { 1,    1,   3,   3,   1,   1}; //Tree expected
-    int outdegree[]     = { 1,    1,   3,   3,   1,   1}; //Tree expected
-    
-    for(int v=0; v < nv; v++) model.add(vertex[v]);
-    for(int e=0; e < ne; e++) model.connect(from[e], to[e], weight[e]);
-
-    REQUIRE(model.size() == nv);
-    REQUIRE(model.empty() == false);
-    
-    UGraphAlgorithm<char> mst;
-    UGraphModel<char> tree = mst.minSpanningTree(&model);
-    
-    for(int v=0; v < nv; v++){
-        REQUIRE(tree.inDegree(vertex[v]) == indegree[v]);
-        REQUIRE(tree.outDegree(vertex[v]) == outdegree[v]);
-    }
-}
 
 #endif /* GRAPHTEST_H */
 

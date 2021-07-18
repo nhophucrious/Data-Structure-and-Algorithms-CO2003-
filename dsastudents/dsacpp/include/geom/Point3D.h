@@ -61,6 +61,10 @@ public:
     static Point3D* genPoints(  int size, 
                                 float minValue=0, float maxValue=1, 
                                 bool manualSeed=false, int seedValue=0);
+    static Point3D* genPointsNormal(  int size, 
+                                float *mu, //array 3 items
+                                float *sigma, //array 3 items
+                                bool manualSeed=false, int seedValue=0);
     static void println(Point3D* head, int size);
     
     

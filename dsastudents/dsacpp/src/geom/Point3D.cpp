@@ -104,7 +104,6 @@ string Point3D::toString(Point3D*& point){
 Point3D* Point3D::genPoints(int size, float minValue, float maxValue, 
                             bool manualSeed, int seedValue){
     Point3D* head = new Point3D[size];
-        
     std::default_random_engine* engine;
     if(manualSeed)
         engine = new std::default_random_engine(static_cast<long unsigned int>(seedValue));
@@ -117,6 +116,31 @@ Point3D* Point3D::genPoints(int size, float minValue, float maxValue,
         float x = dist(*engine);
         float y = dist(*engine);
         float z = dist(*engine);
+        head[idx] = Point3D(x,y,z);
+    }
+    delete engine;
+    return head;
+}
+
+Point3D* Point3D::genPointsNormal(  int size, 
+                                float *mu, //array 3 items
+                                float *sigma, //array 3 items
+                                bool manualSeed, int seedValue){
+    Point3D* head = new Point3D[size];
+    std::default_random_engine* engine;
+    if(manualSeed)
+        engine = new std::default_random_engine(static_cast<long unsigned int>(seedValue));
+    else
+        engine = new std::default_random_engine(static_cast<long unsigned int>(time(0)));
+    normal_distribution<> dist_x(mu[0], sigma[0]);
+    normal_distribution<> dist_y(mu[1], sigma[1]);
+    normal_distribution<> dist_z(mu[2], sigma[2]);
+
+    //
+    for(int idx=0; idx < size; idx++){
+        float x = dist_x(*engine);
+        float y = dist_y(*engine);
+        float z = dist_z(*engine);
         head[idx] = Point3D(x,y,z);
     }
     delete engine;

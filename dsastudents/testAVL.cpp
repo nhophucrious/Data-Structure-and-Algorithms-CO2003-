@@ -19,20 +19,33 @@ using namespace std;
 #include "sorting/XArrayListSE.h"
 #include<iostream>
 #include"hash/XHashMap.h"
+#include"graph/UGraphModel.h"
 using namespace std;
+
+bool vertexEQ(int& lhs, int& rhs){
+    return lhs == rhs;
+}
+string vertex2str(int& item){
+    return std::to_string(item);
+}
+void quiz(){
+    int vertices[] = {1, 2, 3, 4, 5};
+    int from[] = {1, 2, 3, 3, 4};
+    int to[]   = {3, 3, 4, 5, 5};
+    int nedges = 4;
+    UGraphModel<int> graph(&vertexEQ, &vertex2str);
+    for(int v: vertices) graph.add(v);
+    for(int idx=0; idx < nedges; idx++) graph.connect(from[idx], to[idx]);
+    DLinkedList<typename UGraphModel<int>::VertexNode*>::Iterator it = graph.nodeList;
+    while(it != graph.nodeList.end())
+    {
+        
+        cout << "In Degree: " << (*it)->inDegree() << " ,Out Degree: " << (*it)->outDegree() << endl;
+    }
+}
 
 int main()
 {
-    XHashMap<int, int> map(&XHashMap<int,int>::simpleHash);
-    cout << map.getCapacity() << endl;
-    Pair<int, int> pairs[] = {
-        Pair<int, int>(10, 20),
-        Pair<int, int>(20, 40),
-        Pair<int, int>(40, 80),
-        Pair<int, int>(50, 100),
-        Pair<int, int>(60, 120),
-        Pair<int, int>(70, 140)};
-    for(Pair<int, int> pair: pairs) map.put(pair.key, pair.value);
-    map.println();
-    // hashDemo1();
+    quiz();
+    return 0;
 }
