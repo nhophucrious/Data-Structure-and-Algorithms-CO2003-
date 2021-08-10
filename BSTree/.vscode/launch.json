@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "/mnt/c/Users/DELL/Desktop/Data-Structure-and-Algorithms-CO2003-/BSTree",
+      "environment": [],
+      "program": "/mnt/c/Users/DELL/Desktop/Data-Structure-and-Algorithms-CO2003-/BSTree/build/Debug/outDebug",
+      "internalConsoleOptions": "openOnSessionStart",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "externalConsole": false
+    }
+  ]
+}
