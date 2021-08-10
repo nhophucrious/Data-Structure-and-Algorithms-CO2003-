@@ -39,7 +39,9 @@ protected:
     bool (*valueEqual)(V &, V &);           //valueEqual(V& lhs, V& rhs): test if lhs == rhs
     void (*deleteKeys)(XHashMap<K, V> *);   //deleteKeys(XHashMap<K,V>* pMap): delete all keys stored in pMap
     void (*deleteValues)(XHashMap<K, V> *); //deleteValues(XHashMap<K,V>* pMap): delete all values stored in pMap
-
+    //void freeValue (XHashMap<K, V> *pMap)
+    //void freeKey (XHashMap<K, V> *pMap)
+    //void freeValue (XHashMap<K, V> *pMap)
 public:
     XHashMap(
         int (*hashCode)(K &, int),
@@ -299,7 +301,7 @@ V XHashMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
     {
         if (keyEQ(entry->key, key))
         {
-
+            count -= 1;
             //remove head
             if (entry->prev == 0)
             {
@@ -342,7 +344,6 @@ V XHashMap<K, V>::remove(K key, void (*deleteKeyInMap)(K))
                 delete entry;
                 return value;
             }
-            count -= 1;
         }
         entry = entry->next;
     }
@@ -362,7 +363,7 @@ bool XHashMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*de
     {
         if (keyEQ(entry->key, key) && valueEQ(entry->value, value))
         {
-
+            count -= 1;
             //remove head
             if (entry->prev == 0)
             {
@@ -408,7 +409,6 @@ bool XHashMap<K, V>::remove(K key, V value, void (*deleteKeyInMap)(K), void (*de
                 delete entry;
                 return true;
             }
-            count -= 1;
         }
         entry = entry->next;
     }
@@ -544,7 +544,7 @@ DLinkedList<V> XHashMap<K, V>::values()
         while (entry != NULL)
         {
             list.add(entry->value);
-            entry = entry->next;
+            //entry = entry->next;
         }
     }
     return list;

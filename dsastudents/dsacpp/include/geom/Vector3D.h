@@ -61,6 +61,9 @@ public:
     
     
     //Static section
+    static Vector3D* genVectors(  int size, 
+                                float minValue=0, float maxValue=1, 
+                                bool manualSeed=false, int seedValue=0);
     static bool equals(Vector3D& lhs, Vector3D& rhs); //with pointer to point
     static bool equals(Vector3D*& lhs, Vector3D*& rhs); //with pointer to point
     static string toString(Vector3D& point);

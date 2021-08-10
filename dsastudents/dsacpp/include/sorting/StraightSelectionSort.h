@@ -23,30 +23,22 @@ public:
     void sort(T array[], int size, int (*comparator)(T &, T &))
     {
         //YOUR CODE HERE
-        int walker;
-        int current = 0;
-        int smallest;
-        while (current < size - 1)
+        int i, j, min;
+        for (int i = 0; i < size - 1; i++)
         {
-            smallest = current;
-            walker = current + 1;
-            while (walker < size)
+            min = i;
+            for (int j = i + 1; j < size; j++)
             {
-                if (comparator(array[walker], array[smallest]) < 0)
+                if (comparator(array[j], array[min]) < 0)
                 {
-                    smallest = walker;
+                    min = j;
                 }
-                walker = walker + 1;
             }
-            if (smallest != current)
-            {
-                T temp = array[current];
-                array[current] = array[smallest];
-                array[smallest] = temp;
-            }
-            current = current + 1;
+            T temp = array[i];
+            array[i] = array[min];
+            array[min] = temp;
         }
     }
 };
 
-#endif 
+#endif /* STRAIGHTSELECTIONSORT_H */

@@ -23,30 +23,23 @@ public:
     void sort(T array[], int size, int (*comparator)(T &, T &))
     {
         //YOUR CODE HERE
-        int current, walker;
-        bool flag;
-
-        current = 0;
-        flag = false;
-        while ((current < (size - 1)) && (flag == false))
+        bool done;
+        for (int i = 0; i < size-1; i++)
         {
-            walker = size - 1;            //start from the last and backward
-            flag = true;                  //for testing if the input already in ascending order
-            while (walker > current)
+            done = false;
+            for (int j = i + 1; j < size; j++)
             {
-                if (comparator(array[walker], array[walker - 1]) < 0)
+                if(comparator(array[j],array[i]) < 0)
                 {
-                    flag = false;
-                    //swap:
-                    T temp = array[walker];
-                    array[walker] = array[walker - 1];
-                    array[walker - 1] = temp;
+                    T temp = array[j];
+                    array[j] = array[i];
+                    array[i] = temp;
+                    done = true;
                 }
-                walker -= 1;
             }
-            current += 1;
+            if(done == false)
+                break;
         }
     }
 };
-
 #endif /* BUBBLESORT_H */

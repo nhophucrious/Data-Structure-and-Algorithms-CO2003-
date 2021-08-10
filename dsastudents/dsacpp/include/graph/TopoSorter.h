@@ -26,7 +26,7 @@ protected:
     int (*hash_code)(T&, int);
     
 public:
-    TopoSorter(DGraphModel<T>* graph, int (*hash_code)(T&, int)=0){
+    TopoSorter(DGraphModel<T>* graph, int (*hash_code)(T&, int) = &XHashMap<char,int>::simpleHash){
         this->graph = graph;
         this->hash_code = hash_code;
     }   
@@ -74,29 +74,29 @@ public:
     DLinkedList<T> dfsSort(){
         DLinkedList<T> topoOrder;
         //YOUR CODE HERE
-        XHashMap<T, int> outDegreeMap = vertex2outDegree();
+        XHashMap<T, int> outDegreeMap = vertex2outDegree(); // get out degree
         DLinkedListSE<T> list;
-        list.copyFrom(listOfZeroInDegrees());
+        list.copyFrom(listOfZeroInDegrees()); // get all zero indegree
         list.sort();
 
         Stack<T> open;
         for (typename DLinkedListSE<T>::Iterator it = list.begin(); it != list.end(); it++)
         {
-            open.push(*it);
+            open.push(*it); // push the zero degree into stack with alphabet order
         }
         while (open.empty() == false)
         {
-            T vertex = open.peek();
-            int outDegree = outDegreeMap.get(vertex);
-            if (outDegree == 0)
+            T vertex = open.peek(); // get the top
+            int outDegree = outDegreeMap.get(vertex); // check outdegree
+            if (outDegree == 0) 
             {
-                open.pop();
+                open.pop(); // if outdegree = 0 -> pop and addfirst  to the result
                 topoOrder.add(0, vertex);
             }
             else
-            {
+            {   //if the outwardEdge is not zero
                 DLinkedListSE<T> children;
-                children.copyFrom(this->graph->getOutwardEdges(vertex));
+                children.copyFrom(this->graph->getOutwardEdges(vertex)); // get outward edge;
                 children.sort();
                 for (typename DLinkedListSE<T>::Iterator it = children.begin(); it != children.end(); it++)
                 {
@@ -142,8 +142,8 @@ protected:
         return map;
     }
     
-    DLinkedList<T> listOfZeroInDegrees(){
-        DLinkedList<T> list;
+    DLinkedListSE<T> listOfZeroInDegrees(){
+        DLinkedListSE<T> list;
         typename AbstractGraph<T>::Iterator vertexIt = this->graph->begin();
         while(vertexIt != this->graph->end()){
             T vertex = *vertexIt;

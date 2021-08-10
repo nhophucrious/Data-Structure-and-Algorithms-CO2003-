@@ -276,7 +276,7 @@ void AVL_Point1(){
     for(int idx=0; idx < 9; idx++) tree.add(array[idx]->getX(), array[idx]);
     tree.println(&pointEntry2Str);
     List<Point*> list = tree.select(10, 15);
-    list.println(&point2str);
+    list.println();
 }
 
 #endif /* AVLTREEDEMO_H */

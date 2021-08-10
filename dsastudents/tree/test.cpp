@@ -86,6 +86,7 @@ void demo2()
 int main(int arc, char **argv)
 {
     demo();
-    // demo1();
+    demo1();
+    demo2();
     return 0;
 }

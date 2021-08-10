@@ -55,17 +55,11 @@ class Edge
     public:
         T from, to;
         float weight;
-        Edge(T form, T to, float weight = 0)
+        Edge(T from, T to, float weight = 0)
         {
             this->from = from;
             this->to = to;
             this->weight = weight;
-        }
-        Edge(const Edge& edge)
-        {
-            this->from = edge.from;
-            this->to = edge.to;
-            this->weight = edge.weight;
         }
 };
 

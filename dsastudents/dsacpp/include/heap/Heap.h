@@ -15,7 +15,7 @@
 #define HEAP_H
 #include <iostream>
 #include <memory.h>
-#include "heap/IHeap.h"
+#include "IHeap.h"
 #include <sstream>
 /*
    * function pointer: int (*comparator)(T& lhs, T& rhs)
@@ -285,12 +285,17 @@ void Heap<T>::remove(T item, void (*removeItemData)(T))
     if (removeItemData != 0)
         removeItemData(elements[foundIndex]);
 
-    int startOldData = foundIndex + 1;
-    int lastOldData = count - 1;
-    count = foundIndex;
-    for (int i = startOldData; i <= lastOldData; i++)
+    if (foundIndex == 0)
+        pop();
+    else
     {
-        push(elements[i]);
+        int startOldData = foundIndex + 1;
+        int lastOldData = count - 1;
+        count = foundIndex;
+        for (int i = startOldData; i <= lastOldData; i++)
+        {
+            push(elements[i]);
+        }
     }
 }
 
@@ -298,7 +303,7 @@ template <class T>
 bool Heap<T>::contains(T item)
 {
     //YOUR CODE HERE
-    for (int i = 0; i < capacity; i++)
+    for (int i = 0; i < count; i++)
     {
         if (compare(this->elements[i], item) == 0)
             return true;
@@ -364,7 +369,7 @@ string Heap<T>::toString(string (*item2str)(T &))
     }
     return os.str();
 }
-//TODO:
+
 //////////////////////////////////////////////////////////////////////
 //////////////////////// (private) METHOD DEFNITION //////////////////
 //////////////////////////////////////////////////////////////////////
@@ -380,7 +385,8 @@ void Heap<T>::ensureCapacity(int minCapacity)
         try
         {
             T *new_data = new T[capacity];
-            memcpy(new_data, elements, capacity * sizeof(T));
+            //OLD: memcpy(new_data, elements, capacity*sizeof(T));
+            memcpy(new_data, elements, old_capacity * sizeof(T));
             delete[] elements;
             elements = new_data;
         }
@@ -411,24 +417,32 @@ void Heap<T>::reheapUp(int position)
         swap(position, parent);
         reheapUp(parent);
     }
-    
 }
 
 template <class T>
 void Heap<T>::reheapDown(int position)
 {
     //YOUR CODE HERE
-    int leftChildIndex = 2 * position + 1;
-    int rightChildIndex = 2 * position + 2;
-    int smallest = position;
-    if (leftChildIndex < count && aLTb(elements[leftChildIndex], elements[position]) == true)
-        smallest = leftChildIndex;
-    if (rightChildIndex < count && aLTb(elements[rightChildIndex], elements[smallest]) == true)
-        smallest = rightChildIndex;
-    if (smallest != position && smallest < count)
+    int leftChild = position * 2 + 1;
+    int rightChild = position * 2 + 2;
+    int last = count - 1;
+    if(leftChild <= last)
     {
-        swap(smallest, position);
-        reheapDown(smallest);
+        int small = leftChild;
+        if(rightChild <= last)
+        {
+            if(aLTb(this->elements[leftChild],this->elements[rightChild]))
+            {
+                small = leftChild;
+            }
+            else
+                small = rightChild;
+        }
+        if(aLTb(this->elements[small],this->elements[position]))
+        {
+            this->swap(small,position);
+            reheapDown(small);
+        }
     }
 }
 
@@ -465,7 +479,7 @@ void Heap<T>::copyFrom(const Heap<T> &heap)
     this->deleteUserData = heap.deleteUserData;
 
     //Copy items from heap:
-    for (int idx = 0; idx < heap.size(); idx++)
+    for (int idx = 0; idx < heap.count; idx++)
     {
         this->elements[idx] = heap.elements[idx];
     }

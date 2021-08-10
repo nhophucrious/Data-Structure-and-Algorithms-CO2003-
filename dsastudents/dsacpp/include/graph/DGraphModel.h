@@ -38,64 +38,61 @@ public:
     void connect(T from, T to, float weight = 0)
     {
         //YOUR CODE HERE
-        typename AbstractGraph<T>::VertexNode *nodeF = this->getVertexNode(from);
-        typename AbstractGraph<T>::VertexNode *nodeT = this->getVertexNode(to);
-        if (nodeF == 0)
-            throw VertexNotFoundException(this->vertex2Str(*nodeF));
-        if (nodeT == 0)
-            throw VertexNotFoundException(this->vertex2Str(*nodeT));
-        nodeF->connect(nodeT, weight);
+        typename AbstractGraph<T>::VertexNode *NodeF = this->getVertexNode(from);
+        if (NodeF == NULL)
+            throw VertexNotFoundException(this->vertex2Str(*NodeF));
+        typename AbstractGraph<T>::VertexNode *NodeT = this->getVertexNode(to);
+        if (NodeT == NULL)
+            throw VertexNotFoundException(this->vertex2Str(*NodeT));
+        NodeF->connect(NodeT, weight);
     }
     void disconnect(T from, T to)
     {
         //YOUR CODE HERE
-        typename AbstractGraph<T>::VertexNode *nodeF = this->getVertexNode(from);
-        typename AbstractGraph<T>::VertexNode *nodeT = this->getVertexNode(to);
-        if (nodeF == 0)
-            throw VertexNotFoundException(this->vertex2Str(*nodeF));
-        if (nodeT == 0)
-            throw VertexNotFoundException(this->vertex2Str(*nodeT));
-
-        typename AbstractGraph<T>::Edge *edge = nodeF->getEdge(nodeT);
-        if (edge == 0)
-            throw EdgeNotFoundException(this->edge2Str(*edge));
-        nodeF->removeTo(nodeT);
+        typename AbstractGraph<T>::VertexNode *NodeF = this->getVertexNode(from);
+        typename AbstractGraph<T>::VertexNode *NodeT = this->getVertexNode(to);
+        if (NodeF == NULL)
+            throw VertexNotFoundException(this->vertex2Str(*NodeF));
+        if (NodeT == NULL)
+            throw VertexNotFoundException(this->vertex2Str(*NodeT));
+        typename AbstractGraph<T>::Edge *newEdge = NodeF->getEdge(NodeT);
+        if (newEdge == NULL)
+            throw EdgeNotFoundException(this->edge2Str(*newEdge));
+        NodeF->removeTo(NodeT);
     }
     void remove(T vertex)
     {
         //YOUR CODE HERE
-        typename AbstractGraph<T>::VertexNode *nodeA = this->getVertexNode(vertex);
-        if (nodeA == 0)
-            throw VertexNotFoundException(this->vertex2Str(*nodeA));
-
-        typename DLinkedList<typename AbstractGraph<T>::VertexNode *>::Iterator nodeIt = this->nodeList.begin();
-        while (nodeIt != this->nodeList.end())
+        typename AbstractGraph<T>::VertexNode *NodeF = this->getVertexNode(vertex);
+        if (NodeF == NULL)
+            throw VertexNotFoundException(this->vertex2Str(*NodeF));
+        typename DLinkedList<typename AbstractGraph<T>::VertexNode *>::Iterator it = this->nodeList.begin();
+        while (it != this->nodeList.end())
         {
-            typename AbstractGraph<T>::VertexNode *nodeB = *nodeIt;
-            typename AbstractGraph<T>::Edge *edge = nodeB->getEdge(nodeA);
-            if (edge != 0)
-                nodeB->removeTo(nodeA);
-            edge = nodeA->getEdge(nodeB);
-            if (edge != 0)
-                nodeA->removeTo(nodeB);
-
-            nodeIt++;
+            typename AbstractGraph<T>::VertexNode *NodeT = *it;
+            typename AbstractGraph<T>::Edge *newEdge = NodeF->getEdge(NodeT);
+            if (newEdge != NULL)
+                NodeF->removeTo(NodeT);
+            newEdge = NodeT->getEdge(NodeF);
+            if (newEdge != NULL)
+                NodeT->removeTo(NodeF);
+            it++;
         }
-        this->nodeList.removeItem(nodeA);
+        this->nodeList.removeItem(NodeF);
     }
-
-    static DGraphModel<T> *create(T *vertices, int nvertices,
-                                  Edge<T> *edges, int nedges,
-                                  bool (*vertexEQ)(T &, T &), string (*vertex2str)(T &))
+    
+    static DGraphModel<T>* create(T* Vertices, int nvertices, Edge<T>* edges, int nedges,
+                                bool (*vertexEQ)(T&,T&),
+                                string (*vertex2str)(T&))
     {
         DGraphModel<T> *model = new DGraphModel<T>(vertexEQ, vertex2str);
-        for (int vidx = 0; vidx < nvertices; vidx++)
+        for (int i = 0; i < nvertices; i++)
         {
-            model->add(vertices[vidx]);
+            model->add(Vertices[i]);
         }
-        for (int eidx = 0; eidx < nedges; eidx++)
+        for (int i = 0; i < nedges; i++)
         {
-            model->connect(edges[eidx].from, edges[eidx].to, edges[eidx].weight);
+            model->connect(edges[i].from, edges[i].to, edges[i].weight);
         }
         return model;
     }
